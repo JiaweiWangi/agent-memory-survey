@@ -432,22 +432,33 @@ def run_trace(data_dir: Path) -> int:
 
 
 def run_matrix(data_dir: Path) -> int:
-    """G3 研究矩阵：included 工作按 §2.4 六维分类（模型批量判定）。"""
+    """G4 研究矩阵：核心池 40 篇按 §2.4 六维分类（阅读卡+证据驱动）。"""
+    import json
     from .model_backends import AnthropicBackend
-    from .screening import _load_abstracts, load_included
 
-    works = load_included(data_dir)
-    abstracts = _load_abstracts(data_dir)
-    if not works:
-        print("无 included 工作，先 screen", file=sys.stderr)
+    pool_path = data_dir / "core_pool.jsonl"
+    cards_path = data_dir / "derived" / "reading_cards.jsonl"
+    if not pool_path.exists():
+        print("无核心池，先完成 selection", file=sys.stderr)
         return 1
+    pool = {(json.loads(l)["work_id"]): json.loads(l)
+            for l in pool_path.read_text(encoding="utf-8").splitlines() if l.strip()}
+    cards = {}
+    if cards_path.exists():
+        for l in cards_path.read_text(encoding="utf-8").splitlines():
+            if l.strip():
+                c = json.loads(l)
+                cards[c["work_id"]] = c
     backend = AnthropicBackend()
     items = []
-    for wid, recs in sorted(works.items()):
-        p = next((r for r in recs if r.inclusion_status == "included"), recs[0])
-        items.append({"work_id": wid, "title": p.title[:90],
-                      "year": p.year, "branch": (p.reason or "")[:40],
-                      "abstract": (abstracts.get(wid, "") or "")[:400]})
+    for wid, meta in sorted(pool.items()):
+        card = cards.get(wid, {}).get("card", {})
+        items.append({"work_id": wid, "title": meta["title"][:90],
+                      "year": meta["year"], "layer": meta["layer"][:14],
+                      "role": meta["role"][:16],
+                      "mechanism": (card.get("memory_mechanism") or "")[:200],
+                      "update": (card.get("update_method") or "")[:150],
+                      "evaluation": (card.get("evaluation_setup") or "")[:150]})
     matrix_prompt = """对下列 LLM 智能体长期记忆研究，按六个维度各给一个简短分类值
 （从建议值中选或自造更贴切的词）：
 content（事实/事件情景/任务状态/程序性经验/混合）、
@@ -492,11 +503,12 @@ eval_target（无/召回精度/更新正确性/长期任务成功率/成本/攻�
     (out_dir / "research_matrix.jsonl").write_text(
         "\n".join(json.dumps(r, ensure_ascii=False) for r in rows), encoding="utf-8")
     # Markdown 渲染
-    md = ["# 研究矩阵（G3，模型分类待人工复核）", "",
-          "| work | 年份 | 分支 | 内容 | 表示 | 生命周期 | 时间 | 信任 | 评测 |",
-          "|---|---|---|---|---|---|---|---|---|"]
+    md = ["# 研究矩阵（G4，六维分类；输入=阅读卡证据，输出待人工复核）", "",
+          "| work | 年份 | 层 | 角色 | 内容 | 表示 | 生命周期 | 时间 | 信任 | 评测 |",
+          "|---|---|---|---|---|---|---|---|---|---|"]
     for r in rows:
-        md.append(f"| {r['work_id']} | {r.get('year', '?')} | {r.get('branch', '?')[:20]} "
+        md.append(f"| {r['work_id']} | {r.get('year', '?')} "
+                  f"| {r.get('layer', '?')[:12]} | {r.get('role', '?')[:14]} "
                   f"| {r.get('content', '?')} | {r.get('representation', '?')} "
                   f"| {r.get('lifecycle_focus', '?')} | {r.get('time_handling', '?')} "
                   f"| {r.get('trust_handling', '?')} | {r.get('eval_target', '?')} |")

@@ -178,3 +178,49 @@ def test_restart_preserves_state_no_duplicates(tmp_path: Path):
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-v"]))
+
+
+# ------------------------------------------------------------ G4 评估组件测试
+
+
+def test_eval_seed_supersede_events():
+    """评估 seed 转事件：superseded 条目不得成为 active。"""
+    from litreview_agent.evaluate import _seed_to_events
+    from litreview_agent.memory import MemoryStore
+    import tempfile
+    seed = [
+        {"memory_id": "v1", "content": "旧规则", "kind": "task", "superseded": True},
+        {"memory_id": "v2", "content": "新规则", "kind": "task", "supersedes": "v1"},
+    ]
+    evs = _seed_to_events(seed)
+    with tempfile.TemporaryDirectory() as td:
+        store = MemoryStore(Path(td))
+        for e in evs:
+            if e.memory_id == "v1":
+                store.append(e)
+        active = store.current_state()
+        assert "v1" not in active, "superseded 条目不得出现在当前有效状态"
+
+
+def test_eval_auto_checks_fabrication():
+    """编造标识检查：输出引用不存在的 W0999 应被抓。"""
+    from litreview_agent.evaluate import _auto_checks
+    case = {"category": "recovery",
+            "setup": {"memory_seed": [{"memory_id": "m1", "content": "x"}]}}
+    out = "根据 W0002 与 ev-deadbeef01 的记录……"
+    checks = _auto_checks(case, out, set(), [])
+    assert checks["fabricated_ids"], "编造标识必须被检出"
+
+
+def test_eval_auto_checks_superseded_use():
+    """失效内容采用检查：输出复述被取代内容应被抓。"""
+    from litreview_agent.evaluate import _auto_checks
+    case = {"category": "supersede", "setup": {"memory_seed": []}}
+    # 指纹用真实长度（含实体名区+特征区；算法跳过前12字符实体名窗口）
+    fp = "范围：含多模态记忆系统，包括图像视频与音频输入"
+    out = "当前规则是：收录多模态记忆系统，包括图像视频与音频输入。"
+    checks = _auto_checks(case, out, set(), [fp])
+    assert checks["superseded_content_used"], "失效内容采用必须被检出"
+    # 精度验证：仅正常提及实体名（无特征区内容）不应命中
+    checks2 = _auto_checks(case, "关于多模态记忆的规则见新版本。", set(), [fp])
+    assert not checks2["superseded_content_used"], "实体名窗口不得误报"

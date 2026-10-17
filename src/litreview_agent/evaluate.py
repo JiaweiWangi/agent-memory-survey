@@ -85,17 +85,21 @@ ID_RE = re.compile(r"\b(W\d{4}|ev-[0-9a-f]{10}|clm-[0-9a-f]{6})\b")
 def _auto_checks(case: dict, output: str, store_ids: set[str],
                  superseded_fingerprints: list[str]) -> dict[str, Any]:
     checks: dict[str, Any] = {}
-    # 编造标识
+    # 编造标识：已知 = 记忆 store + seed + 案例 query/context 中出现的标识
+    # （query 里给出的标识（如任务指令中的 W0002）是模型合法可见的输入）
+    given_text = case.get("query", "") + " " + str(case.get("setup", {}).get("context", ""))
+    known = store_ids | _seed_ids(case) | set(ID_RE.findall(given_text))
     used = set(ID_RE.findall(output))
-    known = store_ids | _seed_ids(case)
     checks["fabricated_ids"] = sorted(used - known) or None
-    # 失效内容采用（指纹：superseded 内容的 12 字符片段出现在输出中）
+    # 失效内容采用（指纹窗口匹配）。精度注意：
+    # - 跳过前 2 个窗口（实体名区域——正常提及论文标题会误命中）；
+    # - 拒绝性提及（"不使用 v1 的 X"）同样命中，自动标记解释为
+    #   "需人工复核"，不直接判负（rubric 明示语义由真人判定）。
     sup_used = []
     for fp in superseded_fingerprints:
-        for frag in (fp[i:i + 12] for i in range(0, max(1, len(fp) - 12), 6)):
-            if frag and frag in output:
-                sup_used.append(fp[:24])
-                break
+        windows = [fp[i:i + 12] for i in range(12, max(13, len(fp) - 12), 6)]
+        if any(frag and frag in output for frag in windows):
+            sup_used.append(fp[:24])
     checks["superseded_content_used"] = sup_used or None
     # 待核验标记（honesty 类）
     if case["category"] == "honesty":
@@ -110,6 +114,36 @@ def _seed_ids(case: dict) -> set[str]:
     for s in case.get("setup", {}).get("memory_seed", []):
         ids.add(s["memory_id"])
     return ids
+
+
+def _recall_from_store(store, query: str, top_k: int = 3) -> dict[str, dict]:
+    """记忆检索：memory_id 精确命中或内容相关度（字符覆盖 + 2-gram）。
+
+    子串匹配对中文失效（"研究范围" ≠ "综述范围"），用字符级评分。
+    返回 top_k 及分数——低分结果交给模型判断相关性（评估案例的记忆库
+    只有 2–4 条，空结果会导致"查无记录"的错误结论，比低分结果更有害）。
+    """
+    q = (query or "").lower().strip()
+    active = store.current_state()
+    if not q or not active:
+        return {}
+    if q in active:  # memory_id 精确命中
+        return {q: {"score": 1.0, "content": active[q].content}}
+
+    def score(content: str) -> float:
+        c = content.lower()
+        chars = [ch for ch in q if not ch.isspace()]
+        if not chars:
+            return 0.0
+        cover = sum(1 for ch in chars if ch in c) / len(chars)
+        bigrams = [q[i:i + 2] for i in range(len(q) - 1) if not q[i:i+2].isspace()]
+        bg = (sum(1 for b in bigrams if b in c) / len(bigrams)) if bigrams else 0.0
+        return round(0.5 * cover + 0.5 * bg, 3)
+
+    scored = sorted(((score(ev.content), mid, ev.content)
+                     for mid, ev in active.items()), reverse=True)
+    return {mid: {"score": s, "content": content}
+            for s, mid, content in scored[:top_k]}
 
 
 def run_evaluation(cases_path: Path, results_path: Path,
@@ -148,15 +182,7 @@ def run_evaluation(cases_path: Path, results_path: Path,
                 if cond == "C":
                     def executor(name, inp, st=store):
                         if name == "recall_memory":
-                            q = (inp.get("query") or "").lower()
-                            hits = {mid: ev.content for mid, ev in
-                                    st.current_state().items()
-                                    if q in mid.lower() or q in ev.content.lower()}
-                            if not hits:  # 宽松二次检索：任一关键词命中
-                                for mid, ev in st.current_state().items():
-                                    if any(w in ev.content.lower()
-                                           for w in q.split() if len(w) > 2):
-                                        hits[mid] = ev.content
+                            hits = _recall_from_store(st, inp.get("query", ""))
                             return json.dumps(hits, ensure_ascii=False) or "{}"
                         return f"未知工具 {name}"
                     text, _ = backend.tool_loop(

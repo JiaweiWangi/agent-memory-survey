@@ -1,0 +1,29 @@
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1.35cm,y=1.05cm,
+  phase/.style={rectangle,rounded corners,draw,fill=blue!8,font=\scriptsize,align=center,minimum width=2.2cm},
+  risk/.style={font=\tiny,color=red!60!black,align=center}]
+\node[phase] (write) at (0,0) {写入\\Write};
+\node[phase] (store) at (2,0) {存储\\Store};
+\node[phase] (retrieve) at (4,0) {检索\\Retrieve};
+\node[phase] (use) at (6,0) {使用\\Use};
+\node[phase] (forget) at (2,-1.4) {遗忘/回滚\\Forget};
+\node[phase] (share) at (4,-1.4) {共享/传播\\Share};
+\draw[->,>=stealth,thick] (write) -- (store);
+\draw[->,>=stealth,thick] (store) -- (retrieve);
+\draw[->,>=stealth,thick] (retrieve) -- (use);
+\draw[->,>=stealth,thick] (store) -- (forget);
+\draw[->,>=stealth,thick] (store) -- (share);
+\draw[->,>=stealth,dashed,thick] (use) to[bend left=25] (write);
+\node[risk] at (0,0.75) {错误写入\\投毒注入};
+\node[risk] at (2,0.75) {摘要失真\\来源丢失};
+\node[risk] at (4,0.75) {过时信息\\检索错配};
+\node[risk] at (6,0.75) {错误使用\\过度泛化};
+\node[risk] at (2,-2.05) {误删/残留衍生};
+\node[risk] at (4,-2.05) {跨智能体污染};
+\node[risk] at (3.2,1.45) {使用反馈驱动再写入（红色为本文关注的关键风险）};
+\end{tikzpicture}
+\caption{记忆生命周期与关键风险示意（概念图，依据综述文献的生命周期框架
+归纳\cite{W0039}；红色标注各阶段风险，详见第~\ref{sec:update}~节）。}
+\label{fig:lifecycle}
+\end{figure}

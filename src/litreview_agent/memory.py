@@ -34,17 +34,20 @@ class MemoryStore:
         append_jsonl(self.path, event)
 
     def current_state(self, memory_kind: Optional[str] = None) -> dict[str, MemoryEvent]:
-        """每个 memory_id 的当前有效事件（active 优先，按时间最新）。"""
-        latest: dict[str, MemoryEvent] = {}
+        """每个 memory_id 的当前有效事件。
+
+        只返回 valid_status == active 的事件（模块不变量：失效记忆
+        不作为当前有效事实被默认检索返回）。同 memory_id 的多个 active
+        事件按文件顺序取最新；非 active 事件（superseded/rejected/
+        disputed）对默认检索不可见，历史仍保留在事件文件中。
+        """
+        latest_active: dict[str, MemoryEvent] = {}
         for ev in self._events():
             if memory_kind and ev.memory_kind != memory_kind:
                 continue
-            prev = latest.get(ev.memory_id)
-            # active 状态覆盖 superseded/rejected/disputed；同类状态取最新
-            if prev is None or ev.valid_status == "active" or prev.valid_status != "active":
-                if ev.valid_status == "active" or prev is None or prev.valid_status != "active":
-                    latest[ev.memory_id] = ev
-        return latest
+            if ev.valid_status == "active":
+                latest_active[ev.memory_id] = ev
+        return latest_active
 
     def supersede(self, memory_id: str, new_content: str,
                   source_ids: list[str], reason: str,

@@ -1,0 +1,26 @@
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=1cm,y=0.8cm,
+  box/.style={rectangle,rounded corners,draw,fill=blue!8,font=\scriptsize,align=center,minimum width=3.6cm},
+  note/.style={font=\tiny,align=left,anchor=west}]
+\node[box] (s1) at (0,0) {多源检索\\104 次运行};
+\node[box] (s2) at (0,-1.5) {去重归并\\691 项独立研究};
+\node[box] (s3) at (0,-3.0) {题名摘要初筛\\255 纳入 / 42 排除 / 10 待定};
+\node[box] (s4) at (0,-4.5) {核心池构建（七层）\\40 篇拟选};
+\node[box] (s5) at (0,-6.0) {正文深读\\39 篇 343 条证据};
+\node[box,fill=green!10] (s6) at (0,-7.5) {正文实际引用\\39 项独立研究};
+\draw[->,>=stealth,thick] (s1) -- (s2);
+\draw[->,>=stealth,thick] (s2) -- (s3);
+\draw[->,>=stealth,thick] (s3) -- (s4);
+\draw[->,>=stealth,thick] (s4) -- (s5);
+\draw[->,>=stealth,thick] (s5) -- (s6);
+\node[note] at (2.1,-1.5) {OpenAlex/Crossref/arXiv；\\版本与多载体记录归并};
+\node[note] at (2.1,-3.0) {稳定理由码；\\题名摘要仅判``值得读全文''};
+\node[note] at (2.1,-4.5) {每篇回答三问；\\年份六成复查};
+\node[note] at (2.1,-6.0) {5 页/篇含方法与实验；\\逐字验证摘录};
+\node[note] at (2.1,-7.5) {全文引用命令统计；\\辅助池不计数};
+\end{tikzpicture}
+\caption{文献筛选流程（真实统计，来自 \texttt{data/} 研究记录；计数单位为
+去重后独立研究 work\_id，同一研究的预印本/正式版/演讲载体合并计数）。}
+\label{fig:funnel}
+\end{figure}

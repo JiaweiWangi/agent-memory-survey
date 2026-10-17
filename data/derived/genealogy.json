@@ -1,0 +1,186 @@
+{
+ "nodes": [
+  {
+   "work_id": "W0001",
+   "name": "GenAgents",
+   "layer": "L1-基础系统",
+   "year": 2023
+  },
+  {
+   "work_id": "W0002",
+   "name": "MemGPT",
+   "layer": "L1-基础系统",
+   "year": 2023
+  },
+  {
+   "work_id": "W0003",
+   "name": "MemoryBank",
+   "layer": "L1-基础系统",
+   "year": 2024
+  },
+  {
+   "work_id": "W0004",
+   "name": "Reflexion",
+   "layer": "L1-基础系统",
+   "year": 2023
+  },
+  {
+   "work_id": "W0680",
+   "name": "RETLLM",
+   "layer": "L1-基础系统",
+   "year": 2023
+  },
+  {
+   "work_id": "W0618",
+   "name": "ExpeL",
+   "layer": "L1-基础系统",
+   "year": 2024
+  },
+  {
+   "work_id": "W0681",
+   "name": "AMem",
+   "layer": "L1-基础系统",
+   "year": 2025
+  },
+  {
+   "work_id": "W0682",
+   "name": "Mem0",
+   "layer": "L1-基础系统",
+   "year": 2025
+  },
+  {
+   "work_id": "W0684",
+   "name": "Zep",
+   "layer": "L2-组织检索",
+   "year": 2025
+  },
+  {
+   "work_id": "W0005",
+   "name": "LoCoMo",
+   "layer": "L4-评测",
+   "year": 2024
+  },
+  {
+   "work_id": "W0006",
+   "name": "LongMemEval",
+   "layer": "L4-评测",
+   "year": 2024
+  },
+  {
+   "work_id": "W0140",
+   "name": "CoALA",
+   "layer": "L7-综述与边界",
+   "year": 2023
+  },
+  {
+   "work_id": "W0034",
+   "name": "SelectiveForgetting",
+   "layer": "L3-更新遗忘",
+   "year": 2026
+  },
+  {
+   "work_id": "W0012",
+   "name": "Reconsolidation",
+   "layer": "L3-更新遗忘",
+   "year": 2026
+  },
+  {
+   "work_id": "W0077",
+   "name": "Canonicalization",
+   "layer": "L3-更新遗忘",
+   "year": 2026
+  },
+  {
+   "work_id": "W0261",
+   "name": "HaluMem",
+   "layer": "L5-非恶意可靠性",
+   "year": 2025
+  }
+ ],
+ "edges": [
+  {
+   "from": "W0681",
+   "from_name": "AMem",
+   "to": "W0682",
+   "to_name": "Mem0",
+   "basis": "AMem 阅读卡明确提及 Mem0"
+  },
+  {
+   "from": "W0681",
+   "from_name": "AMem",
+   "to": "W0005",
+   "to_name": "LoCoMo",
+   "basis": "AMem 阅读卡明确提及 LoCoMo"
+  },
+  {
+   "from": "W0682",
+   "from_name": "Mem0",
+   "to": "W0005",
+   "to_name": "LoCoMo",
+   "basis": "Mem0 阅读卡明确提及 LoCoMo"
+  },
+  {
+   "from": "W0684",
+   "from_name": "Zep",
+   "to": "W0002",
+   "to_name": "MemGPT",
+   "basis": "Zep 阅读卡明确提及 MemGPT"
+  },
+  {
+   "from": "W0684",
+   "from_name": "Zep",
+   "to": "W0006",
+   "to_name": "LongMemEval",
+   "basis": "Zep 阅读卡明确提及 LongMemEval"
+  },
+  {
+   "from": "W0006",
+   "from_name": "LongMemEval",
+   "to": "W0003",
+   "to_name": "MemoryBank",
+   "basis": "LongMemEval 阅读卡明确提及 MemoryBank"
+  },
+  {
+   "from": "W0006",
+   "from_name": "LongMemEval",
+   "to": "W0005",
+   "to_name": "LoCoMo",
+   "basis": "LongMemEval 阅读卡明确提及 LoCoMo"
+  },
+  {
+   "from": "W0034",
+   "from_name": "SelectiveForgetting",
+   "to": "W0001",
+   "to_name": "GenAgents",
+   "basis": "阅读卡 relations 明确提及"
+  },
+  {
+   "from": "W0034",
+   "from_name": "SelectiveForgetting",
+   "to": "W0006",
+   "to_name": "LongMemEval",
+   "basis": "阅读卡 relations 明确提及"
+  },
+  {
+   "from": "W0012",
+   "from_name": "Reconsolidation",
+   "to": "W0006",
+   "to_name": "LongMemEval",
+   "basis": "阅读卡 relations 明确提及"
+  },
+  {
+   "from": "W0077",
+   "from_name": "Canonicalization",
+   "to": "W0006",
+   "to_name": "LongMemEval",
+   "basis": "阅读卡 relations 明确提及"
+  },
+  {
+   "from": "W0261",
+   "from_name": "HaluMem",
+   "to": "W0006",
+   "to_name": "LongMemEval",
+   "basis": "阅读卡 relations 明确提及"
+  }
+ ]
+}
