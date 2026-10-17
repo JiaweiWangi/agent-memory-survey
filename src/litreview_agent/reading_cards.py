@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 
 from .model_backends import AnthropicBackend
-from .models import Evidence, read_jsonl
+from .models import Evidence, load_valid_evidence
 from .tools.dedup import distinct_works, load_papers
 
 CARD_PROMPT = """你是文献综述的阅读卡撰写员。基于给定证据（全部来自该论文原文摘录，
@@ -44,7 +44,7 @@ def generate_reading_cards(data_dir: Path, backend: AnthropicBackend,
                            out_path: Path) -> dict:
     pool = [json.loads(l) for l in
             (data_dir / "core_pool.jsonl").read_text().splitlines()]
-    evidence = list(read_jsonl(data_dir / "evidence.jsonl", Evidence))
+    evidence = load_valid_evidence(data_dir)  # 废止证据（reviews fail）不进入阅读卡
     ev_by_work: dict[str, list[Evidence]] = {}
     for e in evidence:  # type: ignore[arg-type]
         ev_by_work.setdefault(e.work_id, []).append(e)

@@ -265,3 +265,103 @@ def test_valid_evidence_excludes_invalidated():
                             correction="废止测试"))
         valid = load_valid_evidence(d)
         assert len(valid) == 1 and valid[0].excerpt == "good"
+
+
+# ------------------------- 身份核验 v2 回归（D-6 真实错配案例）
+
+
+def _mb_first_page():
+    from litreview_agent.tools.fetch import Fetcher
+    from pathlib import Path
+    f = Fetcher(Path("sources"), Path("data/derived/http_cache"))
+    ft = f.fetch_pdf("2305.10250")   # 真实 MemoryBank PDF（本地已存档）
+    return f.extract_pages(ft.path, 1, 1) if ft else ""
+
+
+def test_identity_rejects_reflexion_title_with_memorybank_pdf():
+    """真实错配回归 1：Reflexion 标题 + MemoryBank 首页必须被拒（v1 放行过）。"""
+    from litreview_agent.identity import identity_ok
+    page = _mb_first_page()
+    if not page:
+        pytest.skip("MemoryBank PDF 未存档")
+    assert not identity_ok(
+        "Reflexion: language agents with verbal reinforcement learning", page)
+
+
+def test_identity_rejects_memorybank_title_with_climate_pdf():
+    """真实错配回归 2：MemoryBank 标题 + 气候论文(2307.08909)首页必须被拒。"""
+    from litreview_agent.identity import identity_ok
+    from litreview_agent.tools.fetch import Fetcher
+    from pathlib import Path
+    f = Fetcher(Path("sources"), Path("data/derived/http_cache"))
+    ft = f.fetch_pdf("2307.08909")
+    if not ft:
+        pytest.skip("气候论文 PDF 未存档")
+    page = f.extract_pages(ft.path, 1, 1)
+    assert not identity_ok(
+        "MemoryBank: Enhancing Large Language Models with Long-Term Memory", page)
+
+
+def test_identity_accepts_correct_pairs():
+    """正确配对不得误拒：MemoryBank/Reflexion 各自的正确首页必须通过。"""
+    from litreview_agent.identity import identity_ok
+    from litreview_agent.tools.fetch import Fetcher
+    from pathlib import Path
+    f = Fetcher(Path("sources"), Path("data/derived/http_cache"))
+    mb = f.fetch_pdf("2305.10250")
+    if mb:
+        assert identity_ok(
+            "MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+            f.extract_pages(mb.path, 1, 1))
+    rf = f.fetch_pdf("2303.11366")
+    if rf:
+        assert identity_ok(
+            "Reflexion: language agents with verbal reinforcement learning",
+            f.extract_pages(rf.path, 1, 1))
+
+
+# ------------------- multirun 判分 v2 回归（D-8 真实误判输出）
+
+
+def test_score_multirun_rejects_fabricated_claim():
+    """M4-03/A 真实输出（编造 S102）必须判未完成。"""
+    from litreview_agent.evaluate import score_multirun
+    out = ("可基于 S102（跨基准连贯性主张）写：LoCoMo 与 LongMemEval "
+           "虽都测长程记忆【依据 claim S102】【待核验】。")
+    r = score_multirun("M4-03", out)
+    assert not r["task_completed"]
+    assert any("S102" in p or "s102" in p for p in r["problems"])
+
+
+def test_score_multirun_rejects_overcertainty():
+    """M4-03/C 真实输出（已核验/证据可靠/无缺口 + 虚构评分）必须判未完成。"""
+    from litreview_agent.evaluate import score_multirun
+    out = ("两个检索结果返回相同记录，已核验：claim-1、claim-2。两项均属实，"
+           "且综合评估得分分别为 0.923 和 0.944，证据可靠，无缺口。")
+    r = score_multirun("M4-03", out)
+    assert not r["task_completed"]
+    assert any("过度" in p or "核验" in p for p in r["problems"])
+    assert any("评分" in p for p in r["problems"])
+
+
+def test_score_multirun_requires_action_not_keywords():
+    """M4-01/C 真实输出（复述统计但未指出最少 RQ）必须判未完成。"""
+    from litreview_agent.evaluate import score_multirun
+    out = ("核心池 40 篇，29 篇已有证据。RQ3：20 条 RQ4：15 条 RQ5：12 条。"
+           "如需进一步展开统计请说明维度。")
+    r = score_multirun("M4-01", out)
+    assert not r["task_completed"]
+    assert any("RQ5" in p for p in r["problems"])
+
+
+def test_score_multirun_accepts_genuine_completion():
+    """真实完成（事实+动作齐备）必须通过，防判分过严。"""
+    from litreview_agent.evaluate import score_multirun
+    out = ("根据记忆：核心池 40 篇。RQ3 有 20 条、RQ4 有 15 条、RQ5 仅 12 条。"
+           "RQ5 证据最少，建议作为下一步重点补强。")
+    assert score_multirun("M4-01", out)["task_completed"]
+    out2 = ("上一篇已完成 W0002 的证据提取，接下来应处理 W0006。")
+    assert score_multirun("M4-02", out2)["task_completed"]
+    out3 = ("依据 claim-1（LoCoMo，ACL 2024）与 claim-2（LongMemEval 五能力），"
+            "两个基准分别覆盖超长期对话 QA 与能力维度。")
+    assert score_multirun("M4-03", out3)["task_completed"]

@@ -15,7 +15,7 @@ from pathlib import Path
 
 from .model_backends import AnthropicBackend
 from .checks import check_draft_citations
-from .models import Claim, Evidence, read_jsonl
+from .models import Claim, Evidence, read_jsonl, load_valid_evidence
 from .tools.dedup import distinct_works, load_papers
 
 SECTION_SPECS = [
@@ -111,7 +111,7 @@ def generate_section(data_dir: Path, backend: AnthropicBackend,
     tex = result.text
     # 引用检查：引用必须是核心池且有证据
     pool_ids = set(titles)
-    evs = list(read_jsonl(data_dir / "evidence.jsonl", Evidence))
+    evs = load_valid_evidence(data_dir)
     ev_works = {e.work_id for e in evs}  # type: ignore[arg-type]
     works_map = distinct_works(load_papers(data_dir))
     bad = []

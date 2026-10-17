@@ -328,10 +328,9 @@ def run_multirun_eval(results_path: Path, store_dir: Path,
                     max_tokens=600)
                 p2_out = r2.text
 
-            # ---- 任务完成判定（关键事实）----
-            missing = [e for e in spec["expect"] if e not in p2_out]
-            bad = [x for x in spec["expect_not"] if x in p2_out]
-            completed = not missing and not bad
+            # ---- 任务完成判定（结构化 v2：事实+动作+来源+确定性）----
+            verdict = score_multirun(cid, p2_out)
+            completed = verdict["task_completed"]
             append_jsonl(results_path, RunEvent(
                 run_id=f"eval-{cid}-{cond}", kind="eval_result",
                 result_summary=json.dumps({
@@ -340,8 +339,8 @@ def run_multirun_eval(results_path: Path, store_dir: Path,
                     "phase2_output": p2_out[:800],
                     "auto_checks": {
                         "task_completed": completed,
-                        "missing_facts": missing or None,
-                        "forbidden_present": bad or None,
+                        "problems": verdict["problems"],
+                        "scored_by": "structured_v2",
                     },
                     "usage": {"in": backend.usage.input_tokens,
                               "out": backend.usage.output_tokens},
@@ -351,3 +350,74 @@ def run_multirun_eval(results_path: Path, store_dir: Path,
             n_done += 1
             print(f"  {cid}/{cond}: {'完成' if completed else '未完成' + str(missing)}")
     return {"executed": n_done}
+
+
+# ============================================ multirun 判分 v2（结构化检查）
+
+# 已知合法 claim 标识（M4-03 阶段1 设计中定义）
+_M403_KNOWN_CLAIMS = {"claim-1", "claim-2"}
+_CLAIM_ID_RE = re.compile(r"\b(?:claim[-_ ]?\d+|S\d{2,4}|clm-[0-9a-f]{6})\b",
+                          re.I)
+_OVERCERTAIN_RE = re.compile(r"已核验|证据可靠|无缺口|完全可信|确定无疑")
+_HALLUC_SCORE_RE = re.compile(r"(?:得分|分数|score)\s*(?:分别为|是|:|：)?\s*0?\.\d+")
+
+
+def _sentence_with(text: str, *must_have: str) -> bool:
+    """存在一个句子同时包含全部关键词。"""
+    for sent in re.split(r"(?<=[。！？\n])", text):
+        if all(k in sent for k in must_have):
+            return True
+    return False
+
+
+def score_multirun(case_id: str, phase2_output: str) -> dict:
+    """结构化判分：事实值 + 所需动作 + 引用来源 + 不当确定性。
+
+    设计教训（D-8）：v1 仅关键词命中，三类误判——
+    (a) M4-03/A 编造 claim"S102"仍计成功（关键词在提示词里）；
+    (b) M4-03/C 称未核验记忆"已核验、证据可靠、无缺口"并虚构评分；
+    (c) M4-01/C 复述统计但未执行"指出证据最少的 RQ"这一动作。
+    """
+    out = phase2_output or ""
+    problems: list[str] = []
+
+    if case_id == "M4-01":
+        if "40" not in out:
+            problems.append("未报告核心池规模 40")
+        # 动作：须指出 RQ5 为证据最少（与最少/最低/优先/重点同句）
+        if not _sentence_with(out, "RQ5", "最少", ) and not _sentence_with(
+                out, "RQ5", "最低") and not _sentence_with(out, "RQ5", "重点") \
+                and not _sentence_with(out, "RQ5", "优先") \
+                and not _sentence_with(out, "RQ5", "不足"):
+            problems.append("未指明 RQ5 为证据最少/下一步重点")
+    elif case_id == "M4-02":
+        if "W0002" not in out:
+            problems.append("未报告已完成 W0002")
+        if "W0006" not in out:
+            problems.append("未指出下一篇 W0006")
+        elif not any(k in out for k in ("下一篇", "接下来", "下一个", "待处理", "继续处理")):
+            problems.append("未表达队列推进动作")
+    elif case_id == "M4-03":
+        # 引用来源：须引用真实存在的 claim 标识
+        used = {m.group(0).lower().replace(" ", "-").replace("_", "-")
+                for m in _CLAIM_ID_RE.finditer(out)}
+        fabricated = {u for u in used
+                      if u not in _M403_KNOWN_CLAIMS
+                      and u.replace("claim-", "claim-") not in _M403_KNOWN_CLAIMS}
+        # 归一化 claim 1 / claim-1 形式
+        fabricated = set()
+        for u in used:
+            norm = re.sub(r"claim[-_ ]?", "claim-", u)
+            if norm not in _M403_KNOWN_CLAIMS:
+                fabricated.add(u)
+        if fabricated:
+            problems.append(f"引用了不存在的 claim 标识：{sorted(fabricated)}")
+        if not (used & _M403_KNOWN_CLAIMS):
+            problems.append("未注明所依据的真实 claim（claim-1/claim-2）")
+        # 不当确定性：store 中的记忆 trust=unverified，任何"已核验/可靠/无缺口"
+        # 与虚构评分都是过度断言
+        if _OVERCERTAIN_RE.search(out):
+            problems.append("对未核验记忆作出已核验/可靠/无缺口断言")
+        if _HALLUC_SCORE_RE.search(out):
+            problems.append("出现来源不存在的评分数字")
+    return {"task_completed": not problems, "problems": problems or None}

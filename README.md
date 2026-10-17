@@ -34,7 +34,10 @@ uv run litreview run --stage matrix          # G3：研究矩阵（六维分类�
 uv run litreview run --stage review_queue    # 生成人工核验包
 
 uv run litreview bibgen                     # papers.jsonl → paper/references.bib
-uv run litreview evaluate                   # 12 冻结案例 × A/B/C 条件
+uv run litreview evaluate                   # 标准评估入口（D-8）：
+                                           #   R1/S2/H3 九案例单阶段 + M4 三案例
+                                           #   两阶段（阶段1持久化→重启→阶段2恢复）
+                                           #   结构化判分（事实/动作/来源/确定性）
 
 # LaTeX 构建
 cd paper && tectonic main.tex               # 综述
@@ -77,4 +80,5 @@ docs/           协议、环境、可行性、决策、核验队列
 - 真人核验、成员姓名、计时排练未完成前，交付状态保持"待核验"（见
   `PROGRESS.md` §4）；
 - 摘录验证保证逐字性，不保证解释无过度引申——语义核验需真人；
-- 评估为小样本演示性评估，不构成方法优劣的统计证据。
+- 评估为小样本演示性评估，不构成方法优劣的统计证据；最终结果与判分方法见
+  `evaluation/report.md`（v5：B 上下文注入 12/12 最好，C 结构化记忆 9/12）。

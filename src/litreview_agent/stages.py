@@ -224,8 +224,8 @@ def run_evidence(data_dir: Path) -> int:
         text = coord.run_turn(f"[回合{turn_no}] {objective}", max_steps=12)
         print(f"== 回合 {turn_no} 输出（节选）==")
         print(text[:600])
-        ev_now = list(read_jsonl(data_dir / "evidence.jsonl", Evidence)
-                      if (data_dir / "evidence.jsonl").exists() else [])
+        from .models import load_valid_evidence
+        ev_now = load_valid_evidence(data_dir)
         cl_now = list(read_jsonl(data_dir / "claims.jsonl", Claim)
                       if (data_dir / "claims.jsonl").exists() else [])
         rq_now: dict[str, int] = {}

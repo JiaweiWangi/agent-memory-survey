@@ -73,21 +73,9 @@ def _parse_json_array(text: str) -> Optional[list[dict]]:
 
 
 def _identity_ok(recorded_title: str, first_page_text: str) -> bool:
-    """PDF 首页必须出现记录题名的主要词（忽略大小写/空白/连字符）。
-
-    反例教训：错配的 arXiv ID 会让气候论文的证据进入 MemoryBank 条目
-    （docs/decisions.md D-6）。
-    """
-    import re as _re
-    drop = set("‐‑-­ \t\n\r\f\v")
-    sig = "".join(c for c in (first_page_text or "").lower()
-                  if c not in drop and not c.isspace())
-    # 取题名前 5 个实词（跳过冠词等短词）
-    words = [w for w in _re.split(r"[\s:：,，—-]+", recorded_title) if len(w) > 3][:5]
-    if not words:
-        return True
-    hit = sum(1 for w in words if "".join(w.lower().split()) in sig)
-    return hit >= max(2, len(words) // 2)
+    """委托 identity.identity_ok（v2 强判别规则，D-6/D-8）。"""
+    from .identity import identity_ok
+    return identity_ok(recorded_title, first_page_text)
 
 
 def run_evidence_batch(data_dir: Path, backend: AnthropicBackend,

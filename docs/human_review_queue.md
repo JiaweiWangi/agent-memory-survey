@@ -1,6 +1,6 @@
 # 人工核验队列（真人任务）
 
-生成时间：2026-10-17T09:44:34+00:00。本清单由核验包生成器从真实数据产生；
+生成时间：2026-10-17T11:37:15+00:00。本清单由核验包生成器从真实数据产生；
 所有条目状态为**待核验**。核验结果由成员写入 `data/reviews.jsonl`，
 格式见 `docs/protocol.md` §7；不要在本文件直接打勾——以 reviews.jsonl 为准。
 
@@ -29,8 +29,8 @@
 | P0 | W0690 | L5-非恶意可靠性 | The Right Memory in the Wrong Context: Verifying Retriev | 2026 | 4 | 单版本 |
 | P1 | W0001 | L1-基础系统 | Generative Agents: Interactive Simulacra of Human Behavi | 2023 | 2 | 单版本 |
 | P1 | W0002 | L1-基础系统 | MemGPT: Towards LLMs as Operating Systems | 2023 | 7 | 单版本 |
-| P1 | W0003 | L1-基础系统 | MemoryBank: Enhancing Large Language Models with Long-Te | 2024 | 4 | 单版本；arXiv:2307.08909 |
-| P1 | W0004 | L1-基础系统 | Reflexion: language agents with verbal reinforcement lea | 2023 | 3 | 单版本；arXiv:2305.10250 |
+| P1 | W0003 | L1-基础系统 | MemoryBank: Enhancing Large Language Models with Long-Te | 2024 | 7 | 单版本；arXiv:2305.10250 |
+| P1 | W0004 | L1-基础系统 | Reflexion: language agents with verbal reinforcement lea | 2023 | 6 | 单版本；arXiv:2303.11366 |
 | P1 | W0005 | L4-评测 | Evaluating Very Long-Term Conversational Memory of LLM A | 2024 | 3 | 单版本 |
 | P1 | W0006 | L4-评测 | LongMemEval: Benchmarking Chat Assistants on Long-Term I | 2024 | 6 | 单版本 |
 | P1 | W0028 | L2-组织检索 | Mem++: Non-Destructive Memory for Long-Term Organization | 2026 | 4 | 单版本 |

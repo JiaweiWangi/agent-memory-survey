@@ -80,15 +80,27 @@ def main(argv: list[str] | None = None) -> int:
               f"）→ {out}")
         return 0
     if args.cmd == "evaluate":
-        from .evaluate import run_evaluation
+        # 标准评估入口（D-8）：R1/S2/H3 九案例单阶段 + M4 三案例两阶段
+        # （阶段1持久化→新实例→阶段2恢复；结构化判分）
+        import json as _json
+        from .evaluate import run_evaluation, run_multirun_eval
         from .model_backends import AnthropicBackend
         cases = Path(args.cases) if args.cases else ROOT / "evaluation" / "cases.jsonl"
         results = cases.parent / "results.jsonl"
         if results.exists():
             stamp = now_stamp()
             results.rename(cases.parent / f"results_{stamp}.jsonl.bak")
-        stats = run_evaluation(cases, results, AnthropicBackend())
-        print(f"评估执行：{stats['executed']}/{stats['total_expected']} → {stats['results']}")
+        backend = AnthropicBackend()
+        # 单阶段部分：过滤 M4（由两阶段实验接管）
+        rows = [l for l in cases.read_text(encoding="utf-8").splitlines()
+                if l.strip() and not _json.loads(l)["case_id"].startswith("M4")]
+        tmp_cases = results.parent / "_cases_singlephase.jsonl"
+        tmp_cases.write_text("\n".join(rows) + "\n", encoding="utf-8")
+        stats1 = run_evaluation(tmp_cases, results, backend)
+        stats2 = run_multirun_eval(results, results.parent / "_eval_tmp", backend)
+        total = stats1["executed"] + stats2["executed"]
+        print(f"评估执行：单阶段 {stats1['executed']}/27 + 两阶段 multirun "
+              f"{stats2['executed']}/9 = {total}/36 → {results}")
         return 0
     parser.error("未知组合")
     return 2
