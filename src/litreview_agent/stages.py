@@ -162,7 +162,21 @@ def run_evidence(data_dir: Path) -> int:
     print(f"选定代表论文 {len(selected)} 项：{selected}")
 
     run_id = f"ev-{__import__('time').strftime('%m%d%H%M%S')}"
-    backend = AnthropicBackend(logger=lambda d: None)  # usage 由协调器记录
+    events_path = data_dir.parent / "runs" / run_id / "events.jsonl"
+
+    def _usage_logger(d: dict) -> None:
+        """模型调用用量入运行日志（课程要求：真实成本信息可查）。"""
+        if d.get("kind") == "model_result":
+            from .models import RunEvent, append_jsonl
+            u = d.get("usage") or {}
+            append_jsonl(events_path, RunEvent(
+                run_id=run_id, kind="usage", model=d.get("model"),
+                prompt_version=d.get("prompt_version"),
+                input_tokens=u.get("input_tokens"),
+                output_tokens=u.get("output_tokens"),
+                status="ok"))
+
+    backend = AnthropicBackend(logger=_usage_logger)
     coord = Coordinator(data_dir, run_id, backend, selected_work_ids=selected)
 
     # 续跑感知：已有证据的论文不再重复提取；目标按剩余缺口组织
@@ -291,6 +305,189 @@ def run_draft(data_dir: Path) -> int:
     print("== 引用检查报告（data/derived/draft_g2_check.md）==")
     print(report)
     return 0 if "错误" not in report else 1
+
+
+# ================================================================ G3 阶段
+
+
+def run_screen(data_dir: Path, max_candidates: int | None = None) -> int:
+    """G3 筛选：批量模型筛选（题名+摘要），写回 inclusion_status。"""
+    from .model_backends import AnthropicBackend
+    from .screening import run_screening
+
+    backend = AnthropicBackend()
+    stats = run_screening(data_dir, backend,
+                          max_candidates=max_candidates or 150)
+    print("== 筛选结果 ==")
+    for k, v in stats.items():
+        if k != "run_id":
+            print(f"  {k}: {v}")
+    print(f"运行记录：runs/{stats['run_id']}/events.jsonl")
+    return 0
+
+
+def run_evidence_batch(data_dir: Path, max_works: int | None = None) -> int:
+    """G3 批量证据提取（决策 D-2：单篇单调用 + G2 验证器）。"""
+    from .evidence_batch import run_evidence_batch as _run
+    from .model_backends import AnthropicBackend
+
+    backend = AnthropicBackend()
+    stats = _run(data_dir, backend, max_works=max_works)
+    print("== 批量证据提取结果 ==")
+    for k, v in stats.items():
+        if k != "run_id":
+            print(f"  {k}: {v}")
+    print(f"运行记录：runs/{stats['run_id']}/events.jsonl")
+    return 0
+
+
+# 前向追踪锚点（G2 代表作 + 种子经典；OA id 从 papers.jsonl 的 url 字段解析）
+TRACE_TITLES = [
+    "MemGPT: Towards LLMs as Operating Systems",
+    "Generative Agents: Interactive Simulacra of Human Behavior",
+    "Reflexion: language agents with verbal reinforcement learning",
+    "MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+    "Evaluating Very Long-Term Conversational Memory of LLM Agents",
+    "LongMemEval: Benchmarking Chat Assistants",
+]
+# 后向补齐：经典/代表工作名定向检索（综述相关工作章节提到的脉络节点）
+CLASSIC_NAMES = [
+    "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+    "RecurrentGPT: Interactive Generation of (Arbitrarily) Long Text",
+    "RET-LLM: Towards a General Read-Write Memory for Large Language Models",
+    "ExpeL: LLM Agents Are Experiential Learners",
+    "A-MEM: Agentic Memory for LLM Agents",
+    "Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory",
+    "HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models",
+    "Zep: A Temporal Knowledge Graph Architecture for Agent Memory",
+    "Titans: Learning to Memorize at Test Time",
+    "MemoRAG: Moving towards Long-Context LLMs through Retrieval-Augmented Long-term Memory",
+]
+
+
+def run_trace(data_dir: Path) -> int:
+    """G3 引文追踪：前向 cites: + 经典名补检（决策 D-1）。"""
+    from .tools.search import HttpCache, OpenAlexSearcher
+
+    cache = HttpCache(data_dir / "derived" / "http_cache")
+    oa = OpenAlexSearcher(cache, data_dir)
+    log_path = data_dir / "search_runs.jsonl"
+    works = distinct_works(load_papers(data_dir))
+
+    # 1) 前向追踪：对锚点论文取 citing works
+    oa_by_title = {}
+    for wid, recs in works.items():
+        for r in recs:
+            if r.url and "openalex.org/W" in (r.url or ""):
+                oa_by_title[r.title] = (wid, r.url.split("/")[-1])
+    all_hits = []
+    print("== 前向追踪（OpenAlex cites:）==")
+    for title in TRACE_TITLES:
+        match = next((v for k, v in oa_by_title.items()
+                      if k and title[:30].lower() in k.lower()), None)
+        if not match:
+            print(f"  跳过（无 OA id）: {title[:50]}")
+            continue
+        wid, oa_id = match
+        try:
+            hits = oa.works_citing(oa_id, per_page=25, log_path=log_path,
+                                   query_tag=f"from:{wid}")
+            print(f"  {title[:45]}…: {len(hits)} 条被引")
+            all_hits.extend(hits)
+        except Exception as e:  # noqa: BLE001
+            print(f"  {title[:45]}…: 失败 {e}", file=sys.stderr)
+
+    # 2) 经典名定向检索（后向补齐）
+    print("== 经典名定向检索 ==")
+    for name in CLASSIC_NAMES:
+        try:
+            hits = oa.search(name, per_page=3, log_path=log_path)
+            if hits:
+                print(f"  {name[:50]}: 命中 {hits[0].title[:50]}")
+                all_hits.extend(hits[:1])
+            else:
+                print(f"  {name[:50]}: 未命中")
+        except Exception as e:  # noqa: BLE001
+            print(f"  {name[:50]}: 失败 {e}", file=sys.stderr)
+
+    touched, new_works, appended = merge_hits(all_hits, "g3-trace", data_dir)
+    print(f"== 合并：新增 {new_works} 项独立研究（{appended} 条记录）==")
+    print("后续：对新增候选跑 run --stage screen（可 --max 限定）。")
+    return 0
+
+
+def run_matrix(data_dir: Path) -> int:
+    """G3 研究矩阵：included 工作按 §2.4 六维分类（模型批量判定）。"""
+    from .model_backends import AnthropicBackend
+    from .screening import _load_abstracts, load_included
+
+    works = load_included(data_dir)
+    abstracts = _load_abstracts(data_dir)
+    if not works:
+        print("无 included 工作，先 screen", file=sys.stderr)
+        return 1
+    backend = AnthropicBackend()
+    items = []
+    for wid, recs in sorted(works.items()):
+        p = next((r for r in recs if r.inclusion_status == "included"), recs[0])
+        items.append({"work_id": wid, "title": p.title[:90],
+                      "year": p.year, "branch": (p.reason or "")[:40],
+                      "abstract": (abstracts.get(wid, "") or "")[:400]})
+    matrix_prompt = """对下列 LLM 智能体长期记忆研究，按六个维度各给一个简短分类值
+（从建议值中选或自造更贴切的词）：
+content（事实/事件情景/任务状态/程序性经验/混合）、
+representation（原始片段/摘要卡片/结构化记录/图/分层/向量库/混合）、
+lifecycle_focus（写入/筛选/检索/更新/遗忘/全生命周期）、
+time_handling（无/时间戳/有效区间/版本链/时间推理）、
+trust_handling（无/来源标注/信任分数/验证过滤/人类确认）、
+eval_target（无/召回精度/更新正确性/长期任务成功率/成本/攻击鲁棒性）。
+输出 JSON 数组：{"work_id":..., "content":..., "representation":...,
+"lifecycle_focus":..., "time_handling":..., "trust_handling":..., "eval_target":...}
+只输出 JSON。
+
+研究列表：
+""" + "\n".join(f"- {json.dumps(it, ensure_ascii=False)}" for it in items)
+
+    result = backend.complete(system=matrix_prompt,
+                              messages=[{"role": "user", "content": "分类。只输出 JSON。"}],
+                              max_tokens=4000)
+    m = None
+    import re as _re
+    mm = _re.search(r"\[.*\]", result.text, _re.S)
+    if mm:
+        try:
+            m = json.loads(mm.group(0))
+        except json.JSONDecodeError:
+            m = None
+    if not m:
+        print("矩阵生成失败（模型输出不可解析）", file=sys.stderr)
+        print(result.text[:300])
+        return 1
+    by_wid = {it["work_id"]: it for it in items}
+    out_dir = data_dir / "derived"
+    out_dir.mkdir(exist_ok=True)
+    rows = []
+    for it in m:
+        if it.get("work_id") not in by_wid:
+            continue
+        base = by_wid[it["work_id"]]
+        rows.append({**base, **{k: it.get(k, "?") for k in
+                                ("content", "representation", "lifecycle_focus",
+                                 "time_handling", "trust_handling", "eval_target")}})
+    (out_dir / "research_matrix.jsonl").write_text(
+        "\n".join(json.dumps(r, ensure_ascii=False) for r in rows), encoding="utf-8")
+    # Markdown 渲染
+    md = ["# 研究矩阵（G3，模型分类待人工复核）", "",
+          "| work | 年份 | 分支 | 内容 | 表示 | 生命周期 | 时间 | 信任 | 评测 |",
+          "|---|---|---|---|---|---|---|---|---|"]
+    for r in rows:
+        md.append(f"| {r['work_id']} | {r.get('year', '?')} | {r.get('branch', '?')[:20]} "
+                  f"| {r.get('content', '?')} | {r.get('representation', '?')} "
+                  f"| {r.get('lifecycle_focus', '?')} | {r.get('time_handling', '?')} "
+                  f"| {r.get('trust_handling', '?')} | {r.get('eval_target', '?')} |")
+    (out_dir / "research_matrix.md").write_text("\n".join(md), encoding="utf-8")
+    print(f"研究矩阵：{len(rows)} 项 → data/derived/research_matrix.md")
+    return 0
 
 
 def check_corpus(data_dir: Path) -> int:

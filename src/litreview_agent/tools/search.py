@@ -181,6 +181,67 @@ class OpenAlexSearcher(BaseSearcher):
             self._log(run, log_path)
         return hits
 
+    def get_work(self, oa_id: str) -> Optional[dict]:
+        """取单个 work 完整记录（含 referenced_works，向后追踪用）。"""
+        try:
+            text = self._fetch(oa_id)
+            return json.loads(text)
+        except (SearchError, json.JSONDecodeError):
+            return None
+
+    def works_citing(self, oa_id: str, per_page: int = 25,
+                     log_path: Optional[Path] = None,
+                     query_tag: str = "") -> list[SearchHit]:
+        """向前追踪：引用了某 work 的后续研究（filter=cites:<id>）。"""
+        params: dict = {"filter": f"cites:{oa_id}", "per-page": per_page}
+        if self.mailto:
+            params["mailto"] = self.mailto
+        run = SearchRun(source=self.name, query=f"cites:{oa_id} {query_tag}".strip(),
+                        filters=f"cites:{oa_id}", status="ok")
+        try:
+            text = self._fetch(self.BASE, params)
+            data = json.loads(text)
+        except SearchError as e:
+            run.status, run.error = "failed", str(e)
+            if log_path:
+                self._log(run, log_path)
+            raise
+        hits = [self._to_hit(w) for w in data.get("results", [])]
+        run.result_count = len(hits)
+        if log_path:
+            self._log(run, log_path)
+        return hits
+
+    def referenced_works(self, oa_id: str,
+                         log_path: Optional[Path] = None) -> list[SearchHit]:
+        """向后追踪：某 work 引用的参考文献（只返回有 title 的记录）。"""
+        rec = self.get_work(oa_id)
+        run = SearchRun(source=self.name, query=f"refs:{oa_id}",
+                        status="ok" if rec else "failed")
+        if not rec:
+            if log_path:
+                self._log(run, log_path)
+            return []
+        ref_ids = rec.get("referenced_works") or []
+        hits: list[SearchHit] = []
+        # 批量取：OpenAlex 支持 filter=ids.openalex:W1|W2|...
+        for i in range(0, len(ref_ids), 50):
+            chunk = ref_ids[i:i + 50]
+            params: dict = {"filter": f"ids.openalex:{'|'.join(chunk)}",
+                            "per-page": 50}
+            if self.mailto:
+                params["mailto"] = self.mailto
+            try:
+                text = self._fetch(self.BASE, params)
+                data = json.loads(text)
+                hits.extend(self._to_hit(w) for w in data.get("results", []))
+            except SearchError:
+                continue  # 单批失败不阻塞整轮追踪
+        run.result_count = len(hits)
+        if log_path:
+            self._log(run, log_path)
+        return hits
+
     @staticmethod
     def _to_hit(w: dict) -> SearchHit:
         doi = normalize_doi(w.get("doi"))

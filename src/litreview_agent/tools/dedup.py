@@ -10,6 +10,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import unicodedata
 from pathlib import Path
@@ -102,6 +103,12 @@ def merge_hits(hits: list[SearchHit], discovered_by: str,
     reg = WorkRegistry(papers)
     touched: list[Paper] = []
     new_works = appended = 0
+    ab_path = data_dir / "abstracts.jsonl"
+    known_abstracts: set[str] = set()
+    if ab_path.exists():
+        known_abstracts = {json.loads(l).get("work_id")
+                           for l in ab_path.read_text(encoding="utf-8").splitlines()
+                           if l.strip()}
     for hit in hits:
         if not hit.title:
             continue
@@ -138,6 +145,15 @@ def merge_hits(hits: list[SearchHit], discovered_by: str,
                 touched.append(paper)
                 append_jsonl(path, paper)
                 appended += 1
+    # 摘要侧车维护：新 work 带摘要则记录（已有则跳过，保持首见版本）
+    for hit in hits:
+        if hit.title and hit.abstract:
+            wid = reg.match(hit)
+            if wid and wid not in known_abstracts:
+                with ab_path.open("a", encoding="utf-8") as fh:
+                    fh.write(json.dumps({"work_id": wid, "abstract": hit.abstract},
+                                        ensure_ascii=False) + "\n")
+                known_abstracts.add(wid)
     return touched, new_works, appended
 
 
