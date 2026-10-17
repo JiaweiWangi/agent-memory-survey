@@ -47,6 +47,8 @@ class SearchHit:
     url: Optional[str] = None
     abstract: Optional[str] = None
     oa_id: Optional[str] = None  # OpenAlex work id（引文追踪用）
+    is_oa: Optional[bool] = None
+    oa_url: Optional[str] = None
 
 
 class HttpCache:
@@ -154,18 +156,17 @@ class OpenAlexSearcher(BaseSearcher):
         self.per_page = per_page
 
     def search(self, query: str, per_page: Optional[int] = None,
-               from_year: Optional[int] = None, cursor: Optional[str] = None,
-               log_path: Optional[Path] = None) -> tuple[list[SearchHit], Optional[str]]:
-        """返回 (hits, next_cursor)。cursor 为 "*" 表示首页。"""
-        params: dict = {"search": query, "per-page": per_page or self.per_page}
+               from_year: Optional[int] = None, page: int = 1,
+               log_path: Optional[Path] = None) -> list[SearchHit]:
+        """page 翻页（cursor 翻页需 API key，实测 page 参数无需）。"""
+        params: dict = {"search": query, "per-page": per_page or self.per_page,
+                        "page": page}
         if self.mailto:
             params["mailto"] = self.mailto
         if from_year:
             params["filter"] = f"from_publication_date:{from_year}-01-01"
-        if cursor:
-            params["cursor"] = cursor
         run = SearchRun(source=self.name, query=query, filters=params.get("filter"),
-                        cursor_or_page=cursor, status="ok")
+                        cursor_or_page=f"page={page}", status="ok")
         try:
             text = self._fetch(self.BASE, params)
             data = json.loads(text)
@@ -175,13 +176,10 @@ class OpenAlexSearcher(BaseSearcher):
                 self._log(run, log_path)
             raise
         hits = [self._to_hit(w) for w in data.get("results", [])]
-        run.result_count = data.get("meta", {}).get("count")
-        next_cursor = data.get("meta", {}).get("next_cursor")
-        if next_cursor:
-            run.status = "partial"  # 还有下一页未取
+        run.result_count = len(hits)
         if log_path:
             self._log(run, log_path)
-        return hits, next_cursor
+        return hits
 
     @staticmethod
     def _to_hit(w: dict) -> SearchHit:
@@ -193,10 +191,12 @@ class OpenAlexSearcher(BaseSearcher):
             venue = src["source"]["display_name"]
         authors = [a.get("author", {}).get("display_name") or ""
                    for a in w.get("authorships", [])]
+        oa = w.get("open_access") or {}
         return SearchHit(source="openalex", title=w.get("title") or "",
                          authors=[a for a in authors if a], year=year, venue=venue,
                          doi=doi, url=w.get("id"),
-                         abstract=_oa_abstract(w), oa_id=w.get("id"))
+                         abstract=_oa_abstract(w), oa_id=w.get("id"),
+                         is_oa=oa.get("is_oa"), oa_url=oa.get("oa_url"))
 
 
 def _oa_abstract(w: dict) -> Optional[str]:
@@ -217,6 +217,7 @@ class ArxivSearcher(BaseSearcher):
 
     def __init__(self, cache: HttpCache, data_dir: Path,
                  min_interval: float = 3.0, **kw):
+        kw.setdefault("timeout", 60.0)  # arXiv 复杂查询可能较慢
         super().__init__(cache, data_dir, **kw)
         self.min_interval = min_interval
 
@@ -231,8 +232,9 @@ class ArxivSearcher(BaseSearcher):
         params = {"search_query": query, "max_results": max_results, "start": start}
         run = SearchRun(source=self.name, query=query, cursor_or_page=str(start),
                         status="ok")
-        try:
-            for attempt in range(self.max_retries + 1):
+        last_err: Optional[str] = None
+        for attempt in range(self.max_retries + 1):
+            try:
                 self._throttle()
                 r = self._client.get(self.BASE, params=params)
                 if r.status_code == 200 and not r.text.strip().startswith("Rate exceeded"):
@@ -242,19 +244,17 @@ class ArxivSearcher(BaseSearcher):
                     if log_path:
                         self._log(run, log_path)
                     return hits
-                # 限流：指数退避后重试
-                wait = 3 * (2 ** attempt)
-                time.sleep(wait)
-                run.error = f"rate_limited attempt{attempt}"
-            run.status = "failed"
-            if log_path:
-                self._log(run, log_path)
-            raise RateLimited(f"arXiv 重试耗尽: {query[:80]}")
-        except httpx.HTTPError as e:
-            run.status, run.error = "failed", str(e)
-            if log_path:
-                self._log(run, log_path)
-            raise SearchError(str(e)) from e
+                last_err = f"HTTP {r.status_code} / rate_limited"
+            except httpx.HTTPError as e:
+                last_err = f"{type(e).__name__}: {e}"
+            # 限流或网络错误：指数退避后重试
+            wait = 3 * (2 ** attempt)
+            time.sleep(wait)
+            run.error = f"attempt{attempt}: {last_err}"
+        run.status = "failed"
+        if log_path:
+            self._log(run, log_path)
+        raise RateLimited(f"arXiv 重试耗尽 ({last_err}): {query[:80]}")
 
     def _parse(self, atom_xml: str) -> list[SearchHit]:
         root = ET.fromstring(atom_xml)
@@ -301,6 +301,50 @@ class SemanticScholarSearcher(BaseSearcher):
                 year=p.get("year"), venue=p.get("venue") or None,
                 doi=normalize_doi(ext.get("DOI")), arxiv_id=normalize_arxiv_id(ext.get("ArXiv")),
                 abstract=(p.get("abstract") or "")[:2000] or None))
+        run.result_count = len(hits)
+        if log_path:
+            self._log(run, log_path)
+        return hits
+
+
+class CrossrefSearcher(BaseSearcher):
+    """Crossref：正式出版记录为主（DOI 核验与正式版本发现）。"""
+
+    name = "crossref"
+    BASE = "https://api.crossref.org/works"
+
+    def __init__(self, cache: HttpCache, data_dir: Path, mailto: str = "", **kw):
+        super().__init__(cache, data_dir, **kw)
+        self.mailto = mailto
+
+    def search(self, query: str, rows: int = 20, log_path: Optional[Path] = None,
+               ) -> list[SearchHit]:
+        params: dict = {"query": query, "rows": rows,
+                        "select": "title,DOI,published,container-title,author"}
+        if self.mailto:
+            params["mailto"] = self.mailto
+        run = SearchRun(source=self.name, query=query, status="ok")
+        try:
+            text = self._fetch(self.BASE, params)
+            data = json.loads(text)
+        except SearchError as e:
+            run.status, run.error = "failed", str(e)
+            if log_path:
+                self._log(run, log_path)
+            raise
+        hits = []
+        for it in data.get("message", {}).get("items", []):
+            title = (it.get("title") or [""])[0]
+            authors = [f"{a.get('given', '')} {a.get('family', '')}".strip()
+                       for a in it.get("author", []) if a.get("family")]
+            year = None
+            dp = (it.get("published") or {}).get("date-parts", [[None]])[0]
+            if dp and dp[0]:
+                year = dp[0]
+            hits.append(SearchHit(
+                source="crossref", title=title, authors=authors, year=year,
+                venue=(it.get("container-title") or [None])[0],
+                doi=normalize_doi(it.get("DOI"))))
         run.result_count = len(hits)
         if log_path:
             self._log(run, log_path)
