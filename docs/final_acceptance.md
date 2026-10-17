@@ -1,8 +1,24 @@
 # 最终验收报告
 
-验收日期：2026-10-17（v2：外部审查问题核验与修复后）。本报告如实列出完成情况与剩余限制；"待真人"项不由智能体代签。
+验收日期：2026-10-17（v3：三轮外部核验与修复后，见 §0a/§0b）。本报告如实列出完成情况与剩余限制；"待真人"项不由智能体代签。
 
-## 0. 外部审查核验结果（v2 新增，2026-10-17）
+## 0a. 第三轮外部复验核验结果（v3 新增，2026-10-17）
+
+| 复验问题 | 核验结论 | 实际修改 | 验证依据 |
+|---|---|---|---|
+| references.bib 仍留错误 arXiv（W0003:2307.08909 / W0004:2305.10250） | 成立 | bibgen 重生成：W0003 eprint=2305.10250、W0004 eprint=2303.11366 | `grep -A6 "W0003," paper/references.bib`；包内 latex_source 同步一致 |
+| research_matrix.jsonl 仍把艾宾浩斯/15 用户/194 问题归 Reflexion | 成立（矩阵生成于修正前未重跑） | matrix 从修正后阅读卡重生成：W0003=遗忘曲线、W0004=反思缓冲+Ω 上限；methods_table 同步 | `data/derived/research_matrix.jsonl` W0003/W0004 行 |
+| 核验队列保留错误编号 | 成立（队列文件为修正前生成） | review_queue 重生成 | `docs/human_review_queue.md` W0003/W0004 行 |
+| 身份检查仍放行 Reflexion 标题+MemoryBank PDF | 成立（v1 按词半数命中，通用词即可凑满） | v2 规则：首显著词必须命中+显著词过半+通用词黑名单 | 3 项 identity 回归测试（含两种真实错配被拒、正确配对不误拒）；`check --scope identity` 39/40（仅 W0056 无 PDF） |
+| reading_cards.py 等流程仍读全部证据 | 成立（4 处直接 read_jsonl） | 全部改用 load_valid_evidence（废止感知） | `grep -rn 'read_jsonl.*evidence.jsonl' src/` 归零；测试 21/21 |
+| M4-03/A 编造 S102 判成功；M4-03/C 过度确定判成功；M4-01/C 缺动作判成功 | 全部成立 | 判分 v2（事实+动作+来源+确定性）重评已存储输出（未重跑）：multirun A 0/3、B 3/3、C 1/3；合计 A 2/12、B 12/12、C 9/12；B 最好、C 优势结论从全部材料撤回 | `evaluation/report.md` v5；results.jsonl scored_by=structured_v2；4 项判分回归测试（含防过严合格样例） |
+| README 评测命令仍为旧单阶段 | 成立 | CLI evaluate 改标准入口（R1/S2/H3 单阶段 + M4 两阶段 + v2 判分）；README 同步 | `src/litreview_agent/cli.py` evaluate 分支；README 评测段 |
+| 谱系图节点遮挡 | 成立 | TikZ 图改为关系表（12 条有据边 + 依据列 + "仅提到不视为继承"说明） | review.pdf 第 8 页 `tab:genealogy` 表格完整呈现 |
+| 基准表超出右边界 | 成立 | longtable 列宽适配（1.1+0.6+5.4+6.8cm < 版心宽） | review.pdf 第 14–15 页基准表"主要发现"列完整可读 |
+| 正文仍称 39 篇 343 条证据 | 成立（生成时注入的漏斗文本） | concepts.tex 改"核心池证据 139 条 + 辅助池 203 条（不进入正文引用链）" | review.pdf 第 5 页 |
+| submission 缺 papers/evidence/claims/reviews 四文件 | 成立 | 打包脚本补 6 个 JSONL（papers/evidence/claims/reviews/search_runs/memory_events，含 7 条废止记录） | 独立临时目录 `/tmp/submission_verify` 验证：文件齐全、JSONL 可读、废止记录在内、W0003/W0004 最新绑定正确、三份 PDF 与最终编译版字节一致（cmp）、agent_source 源码离线可编译（py_compile）；包 92 文件 3.5M |
+
+## 0b. 第二轮外部审查核验结果（v2，2026-10-17）
 
 | 审查问题 | 核验结论 | 处置 |
 |---|---|---|
@@ -15,7 +31,7 @@
 | conclusion 缺 RQ1、RQ4/RQ5 编号与协议错位 | 确认 | 补 RQ1 小节；RQ4/RQ5 标题对齐冻结协议编号 |
 | "记忆更新与可靠性"章节标题缺失 | 确认（早前围栏清理误删 \section 行） | 已补回，成品 PDF 验证 |
 | 证据数口径 343 vs 核心池实际 | 确认（核心池有效证据 139 条，343 为含辅助池全库数） | 漏斗图/说明/验收报告/讲稿统一改为分层口径（核心 139 + 辅助 203 = 有效 342） |
-| taxonomy 末句截断 | **不成立**（末句完整；核验依据：文件末段以完整句号结束） | 未作修改 |
+| taxonomy 末句截断 | **成立**（v2 曾误判"不成立"——当时只查了文件末段，漏检第 27 行段落中间的截断句；本轮复验纠正该记录） | 截断句按本章内容补全；顺带修正同段悬空引用"图 1(d)"（指 RecMem 论文自身的图，非本文图表） | 成品 PDF 第 8 页"如何组织与演化……是否可信"完整呈现；`grep -n 如何组织与演 paper/sections/taxonomy.tex` 现为完整句 |
 | 关键论断可追溯性 | 部分成立（原 claims.jsonl 仅 7 条不足以覆盖正文） | 新建关键论断映射表 `data/derived/claims_map.md`：20 项核心论断全部映射到文献+页码定位+摘录+适用条件（20/20 成功） |
 
 ## 1. 课程硬性要求核验
