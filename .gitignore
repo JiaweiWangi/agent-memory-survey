@@ -1,0 +1,29 @@
+# 本目录 scoped .gitignore（父仓库为 Project 根）
+
+# 凭证与本地环境
+.env
+
+# Python（uv 管理；uv.lock 入库保证可复现）
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 下载的论文原文与大型缓存（不入分享包；证据清单记录标识、来源与定位）
+sources/
+data/derived/http_cache/
+
+# LaTeX 构建产物
+*.aux
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.xdv
+
+# 提交包（构建时生成）
+submission/

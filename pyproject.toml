@@ -1,0 +1,27 @@
+[project]
+name = "litreview-agent"
+version = "0.1.0"
+description = "文献综述智能体：检索、证据提取、状态记忆与带引用草稿生成（学术写作课程作业）"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.14.1",
+    "pypdf>=6.21.0",
+    "pytest>=9.1.1",
+]
+
+[project.scripts]
+litreview = "litreview_agent.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/litreview_agent"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = []
