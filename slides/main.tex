@@ -14,77 +14,106 @@
 \begin{itemize}
   \item 任务：前沿问题文献综述（≥30 篇真实文献）+ 智能体完成综述
   \item 选题：LLM 智能体的\textbf{跨会话外部记忆}——组织、更新、可靠性
-  \item 两条底线：\textbf{引用可回查}（反幻觉）与\textbf{人工核验}（不代签）
+  \item 两条底线：\textbf{引用可回查}（逐字验证拦截 360 次改写）与
+        \textbf{人工核验}（智能体不代签）
 \end{itemize}
 \end{frame}
 
 % ============ 第 2 页（1:00）智能体架构 ============
-\begin{frame}{智能体架构与自适应工具选择（1/2）}
+\begin{frame}{智能体架构与自适应工具选择}
 \begin{itemize}
-  \item 协调 Agent：观察 RQ 覆盖缺口 → 选择工具 → 执行 → 记录
-  \item 工具层：OpenAlex/Crossref/arXiv 检索、DOI/arXiv ID 去重、
-        PDF 页级提取、证据/陈述/记忆事件溯源
-  \item 持久化：追加式 JSONL，跨运行可恢复（supersedes 链）
+  \item 协调 Agent：观察 RQ 覆盖缺口 $\to$ 选择工具 $\to$ 执行 $\to$ 记录
+  \item 工具层：OpenAlex/Crossref/arXiv 检索 · DOI/arXiv ID 三重键去重 ·
+        PDF 页级提取 · 证据/陈述/记忆事件溯源
+  \item 持久化：追加式 JSONL，跨运行可恢复；记忆四类双状态
+        （valid/trust 分离，supersedes 链保留历史）
+  \item 两层形态：协调器回合（自主决策）+ 批处理管线（规模化深读）
 \end{itemize}
 \end{frame}
 
 % ============ 第 3 页（1:20）真实决策路径 ============
-\begin{frame}{一条真实的``论文—证据—陈述''路径（2/2）}
-% G4 后填入：具体案例（如 LongMemEval 证据 → claim → 草稿句），
-% 展示逐字验证拦截与记忆更新
+\begin{frame}{一条真实的``论文—证据—陈述''路径}
+\textbf{反幻觉验证（代码强制，不依赖模型自觉）}
 \begin{itemize}
-  \item 逐字签名验证：改写/拼接被拒，实测拦截 N 次
-  \item 缺口驱动补检：模型自选检索词（非脚本预设）
-  \item 诚实失败：正文不可得 → 标注待核验，不编造
+  \item 摘录提交 $\to$ 剔除空白/连字符的字符签名必须与所指页\textbf{连续匹配}
+  \item 改写/省略号/凭记忆复述/表格拼接 $\Rightarrow$ 拒绝并返回最似原文供自纠
+  \item 实战：拦截 360 次（协调器 258 + 批处理 102），0 条被拒摘录入库；
+        独立抽查 4/4 摘录逐字在标注页
+\end{itemize}
+\pause
+\textbf{两次真实自主决策（runs/ 日志可回查）}
+\begin{itemize}
+  \item 缺口驱动：观察到 RQ1/RQ5 证据不足，\textbf{自选} 7 个补检检索词
+        （如 ``memory vs context window RAG parametric knowledge''）
+  \item 诚实失败：无法枚举证据 ID 时拒绝编造，报告工具缺口并提出改进
 \end{itemize}
 \end{frame}
 
 % ============ 第 4 页（0:50）评估与人工验证 ============
 \begin{frame}{小规模评估、失败案例与人工验证职责}
-% G4 评估执行后填入结果表与一个失败案例
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+指标 & A（无记忆） & B（上下文注入） & C（结构化记忆） \\
+\midrule
+编造标识 & 3 & 3 & \textbf{1} \\
+跨会话恢复 & 2/3 & 3/3 & \textbf{3/3} \\
+跨运行任务 & 1/3 & 0/3 & \textbf{3/3} \\
+\bottomrule
+\end{tabular}
+\end{center}
 \begin{itemize}
-  \item 12 冻结案例 × A/B/C 条件（无记忆/上下文注入/结构化记忆）
-  \item 自动检查 + 真人按 rubric 评分
-  \item 人工核验包：文献身份、边界判定、claims 三层队列
+  \item 12 冻结案例 × 3 条件；已知混杂（C 用工具循环）与小样本局限如实报告
+  \item 人工核验包：核心池 40 项文献核验 + 边界判定复核 + claims 复核
 \end{itemize}
 \end{frame}
 
 % ============ 第 5 页（0:40）核心问题与边界 ============
 \begin{frame}{长期记忆的核心问题与研究边界}
 \begin{itemize}
-  \item 为什么长上下文 / 静态 RAG 不够：跨会话、可写、需更新
-  \item 五个研究问题（RQ1 定义边界 … RQ5 评测公平性）
-  \item 综述方法：多源检索 + 两轮筛选 + 版本去重（流程图）
+  \item 长上下文 $\neq$ 记忆：会话内召回，无跨会话持久写入
+  \item 静态 RAG $\neq$ 记忆：单查询检索，无读写闭环
+  \item 参数知识 $\neq$ 记忆：推理时不可精确更新
+  \item 五个研究问题：RQ1 定义边界 · RQ2 组织使用 · RQ3 更新遗忘 ·
+        RQ4 可靠性 · RQ5 评测
 \end{itemize}
 \end{frame}
 
 % ============ 第 6 页（1:20）研究脉络 ============
 \begin{frame}{研究脉络与主要方法类别}
-% G4 谱系图填入：上下文工程（MemGPT）→ 摘要/分层（MemoryBank）
-% → 图结构（A-MEM/Zep/HippoRAG）→ 更新与遗忘 → 可靠性
+\textbf{检索到日志的演进}（谱系图，边=文献明确引用关系）
 \begin{itemize}
-  \item 组织与表示：分页、摘要卡片、图、经验池
-  \item 更新与遗忘：再巩固、选择性遗忘、时间知识
-  \item 可靠性：投毒攻击、来源追踪、可信巩固
+  \item 2023 奠基：记忆流+三因子检索（Generative Agents）· 上下文工程
+        （MemGPT 分页/中断）· 语言化经验（Reflexion/ExpeL）
+  \item 2024–25 组织化：结构化图（A-Mem/HippoRAG 思路）· 时间知识图（Zep）·
+        记忆操作（Mem0 ADD/UPDATE/DELETE/NOOP）
+  \item 2026 前沿：遗忘治理（选择性遗忘/When to Forget）·
+        可靠性（provenance/信任分数）· 效率（递归巩固/率失真压缩）
 \end{itemize}
 \end{frame}
 
 % ============ 第 7 页（1:10）主要发现 ============
 \begin{frame}{记忆更新、冲突与可靠性的主要发现}
-% 基于证据的发现填入（带引用与数字）
 \begin{itemize}
-  \item 发现 1（待填，带引用）
-  \item 发现 2（待填，带引用）
-  \item 发现 3（待填，带引用）
+  \item \textbf{遗忘有效且便宜}：图记忆一次剪枝移除 9.8\% 节点/9.5\% 存储，
+        token F1 变化 +0.001（CI 含 0）——但``图结构优于向量''被证伪
+        （LongMemEval 上 F1 0.417 vs 0.468）
+  \item \textbf{检索到 ≠ 用得上}：代理仅 55\% 时间对正确检索值采取行动，
+        忽略率 0.45–0.53
+  \item \textbf{错误会滚雪球}：记忆幻觉（HaluMem）与错误传播
+        （状态转移雪球）是独立于攻击的可靠性问题
+  \item \textbf{安全有代价}：记忆防御在良性场景损失效用并增加 token 开销
 \end{itemize}
 \end{frame}
 
 % ============ 第 8 页（0:30）评测缺口与结论 ============
 \begin{frame}{评测缺口、主要挑战和结论}
 \begin{itemize}
-  \item 评测缺口：跨会话更新能力考察不足；结果难公平比较
-  \item 挑战：时效与冲突、错误传播、成本
-  \item 结论（待填）
+  \item 评测缺口：LoCoMo 94\% 问题仅需 ≤2 个会话；``更新正确性''与
+        ``何时记忆真正有帮助''缺统一基准
+  \item 挑战：时效与冲突处理 · 错误传播的定量刻画 · 成本-收益报告不统一
+  \item 结论：长期记忆研究正从``存得下''转向``信得过''——更新正确性与
+        错误控制是核心开放问题
 \end{itemize}
 \end{frame}
 
