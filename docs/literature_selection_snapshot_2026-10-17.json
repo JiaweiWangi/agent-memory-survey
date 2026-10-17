@@ -1,0 +1,2768 @@
+{
+  "captured_at": "2026-10-17T17:09:45+08:00",
+  "scope": "Local data and selection logic audit. Full-text scientific quality is not adjudicated here. Files may be updated by another executing agent. work_id counts remain provisional pending duplicate audit.",
+  "sources": [
+    {
+      "path": "data/papers.jsonl",
+      "sha256": "33ba2ee13d5dc7b90d5bfb9e54010dfa8c138e787580cb2a62ada3daa72fae48",
+      "bytes": 655504
+    },
+    {
+      "path": "data/evidence.jsonl",
+      "sha256": "da49f97277dc8fa084a6848e49b382cffa8277d854a621ec35df3c63d93ac7b2",
+      "bytes": 293000
+    },
+    {
+      "path": "data/abstracts.jsonl",
+      "sha256": "afe7994f3b3308e8425d3c0ff2ff8041c1428a7c7056c94171561a603159824d",
+      "bytes": 760072
+    },
+    {
+      "path": "data/search_runs.jsonl",
+      "sha256": "87356fcdd86ad94af8a47449b23ff7ae3a8e24179cfd6d5824a9376cc63bea2f",
+      "bytes": 28707
+    },
+    {
+      "path": "data/derived/core_pool.json",
+      "sha256": "bafd891d035e2fa5dc41f02b4d3b8254a6503f95b32380b1470ef8d252c9af9c",
+      "bytes": 1449
+    },
+    {
+      "path": "data/derived/citation_counts.json",
+      "sha256": "0e97a89dc25ea4e67c43a4b317b3913e5a2485a75826940688c0827e8df5d195",
+      "bytes": 952
+    }
+  ],
+  "summary": {
+    "paper_record_lines": 1050,
+    "source_records": 722,
+    "provisional_work_ids": 687,
+    "included_work_ids": 254,
+    "evidence_work_ids": 77,
+    "evidence_rows": 262,
+    "included_branch_counts": {
+      "organize": 106,
+      "background": 1,
+      "update": 36,
+      "eval": 38,
+      "reliability": 61,
+      "survey": 12
+    },
+    "evidence_branch_counts": {
+      "eval": 1,
+      "organize": 1,
+      "reliability": 43,
+      "background": 1,
+      "survey": 1,
+      "update": 30
+    },
+    "evidence_year_counts": {
+      "2024": 2,
+      "2026": 71,
+      "2023": 1,
+      "2025": 3
+    },
+    "evidence_publication_status": {
+      "unverified": 77
+    },
+    "evidence_page_counts": {
+      "1": 135,
+      "2": 68,
+      "9": 1,
+      "8": 1,
+      "3": 54,
+      "4": 3
+    },
+    "evidence_rows_on_first_three_pages": 257
+  },
+  "evidence_corpus": [
+    {
+      "work_id": "W0002",
+      "title": "MemGPT: Towards LLMs as Operating Systems",
+      "year": 2023,
+      "status": "included",
+      "branch": "background",
+      "reason": "branch=background | MemGPT 提出虚拟上下文管理，是 LLM 操作系统式分层记忆的奠基性工作。",
+      "evidence_count": 7,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-4c0d1aae08",
+          "doi": "10.48550/arxiv.2310.08560",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4387636003",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0006",
+      "title": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+      "year": 2024,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | LongMemEval 基准的审计包，用于评测长期交互记忆及可靠性，属评测工作。",
+      "evidence_count": 6,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-33126651f1",
+          "doi": "10.48550/arxiv.2410.10813",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4403571340",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0007",
+      "title": "Securing LLM-Agent Long-Term Memory Against Poisoning: Non-Malleable, Origin-Bound Authority with Machine-Checked Guarantees",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究不可篡改且绑定来源权威性的记忆安全机制，针对长期记忆投毒防御。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-d829962e2a",
+          "doi": "10.48550/arxiv.2606.24322",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7165756039",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0010",
+      "title": "Agent Zero Memory: Provenance-Aware Long-Term Memory for LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 引入来源感知的记忆组织，解决单一结构盲点与来源追踪问题。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-d9cbc58c2b",
+          "doi": "10.48550/arxiv.2608.29606",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7204896465",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0016",
+      "title": "TRUSTMEM: Learning Trustworthy Memory Consolidation for LLM Agents with Long-Term Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究LLM智能体长期记忆的可信记忆巩固，关注更新过程中重要信息的遗漏，属于可靠性问题。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-bb8731d35c",
+          "doi": "10.48550/arxiv.2606.25161",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7165844965",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0026",
+      "title": "Transferable End-to-End Optimization for Indirect Long-Term Memory Poisoning in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究针对长期记忆间接投毒攻击及多阶段存续机制，涉及记忆写入、检索与利用的完整安全链路。",
+      "evidence_count": 1,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-36350304c1",
+          "doi": "10.48550/arxiv.2609.00523",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7206188606",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0028",
+      "title": "Mem++: Non-Destructive Memory for Long-Term Organizational LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 面向组织场景的非破坏性记忆，保留时间版本信息以处理修订决策，属更新机制。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-b58bd09a18",
+          "doi": "10.48550/arxiv.2610.02002",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7216530988",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0032",
+      "title": "DP-MemView: A Memory Interface for Attribute-Level Transcript Privacy in Long-Term LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究长期记忆导致的属性泄露威胁与差分隐私防护，属于记忆可靠性/安全范畴。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-add868b248",
+          "doi": "10.48550/arxiv.2608.03130",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7172486117",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0034",
+      "title": "Selective Forgetting: A Graph-Based Memory Framework for Long-Term LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | 评估基于知识图谱的记忆框架及其选择性遗忘机制，直接对应记忆组织与更新。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-8b03356580",
+          "doi": "10.48550/arxiv.2608.28978",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7204949780",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0039",
+      "title": "A Survey on Long-Term Memory Security in LLM Agents: Attacks, Defenses, and Governance Across the Memory Lifecycle",
+      "year": 2026,
+      "status": "included",
+      "branch": "survey",
+      "reason": "branch=survey | 综述覆盖长期记忆安全生命周期中的攻击、防御与治理，属于可靠性与安全视角的综述。",
+      "evidence_count": 11,
+      "evidence_pages": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-a82981b90a",
+          "doi": "10.48550/arxiv.2604.16548",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7155049992",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0062",
+      "title": "Memory Provenance Laundering in LLM Agents: A Non-Amplification Firewall for Persistent Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究记忆来源清洗攻击及防火墙防御，直接针对记忆可靠性与安全。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-aebada0712",
+          "doi": "10.48550/arxiv.2607.29167",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7172287493",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0067",
+      "title": "Hidden in Memory: Sleeper Memory Poisoning in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 讨论持久记忆中的投毒攻击风险，属于记忆可靠性问题。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-780529cfbc",
+          "doi": null,
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7161915475",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-97fa6453e7",
+          "doi": "10.48550/arxiv.2605.15338",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7161547260",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-b898f1ea41",
+          "doi": "10.60882/cispa.32780871",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7165732913",
+          "venue": "CISPA Helmholtz Center",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0076",
+      "title": "Memory Poisoning Attack and Defense on Memory Based LLM-Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 明确研究基于记忆的LLM智能体的投毒攻击与防御。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        8,
+        9
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-38dc5de9fe",
+          "doi": "10.48550/arxiv.2601.05504",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7123280946",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0079",
+      "title": "When Agents Remember Too Much: Memory Poisoning Attacks on Large Language Model Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究针对LLM智能体长期记忆的投毒攻击，直接对应可靠性威胁。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-fb97bfee10",
+          "doi": "10.48550/arxiv.2607.06595",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7167802893",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0080",
+      "title": "ChronoMem: Version Control and Semantic Rollback for Large Language Model Agent Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 引入版本控制与语义回滚来处理记忆更新、冲突和遗忘问题。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-0eb70e9e1e",
+          "doi": "10.48550/arxiv.2607.27773",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7171942477",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0085",
+      "title": "Verifiable Memory: Learning Unified Memory Management with Local and Global Verifiers for Large Language Model Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 提出可验证记忆与本地/全局验证器，聚焦长期记忆管理以及证据恢复的可靠性。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-2161b546a3",
+          "doi": "10.48550/arxiv.2608.03137",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7172492227",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0091",
+      "title": "Your Agent's Memories Are Not Its Own: Forged Reasoning Attacks on LLM Agent Memory and Defenses",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究针对代理记忆的伪造推理攻击及防御，属于可靠性范畴。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-827af6bf47",
+          "doi": "10.48550/arxiv.2607.05029",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7167636586",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0094",
+      "title": "When Correct Memory Goes Wrong: Fuzzing Persistent Memory Use in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究正确记忆被错误使用的情况，涉及记忆使用可靠性及评测方法。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-b1fd8f4ccb",
+          "doi": "10.48550/arxiv.2609.38275",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7215097590",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0095",
+      "title": "MemEvoBench: Benchmarking Safety Risks from Memory Misevolution in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 评测记忆错误演化带来的安全风险，属于可靠性基准。",
+      "evidence_count": 1,
+      "evidence_pages": [
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-9b73847f89",
+          "doi": "10.48550/arxiv.2604.15774",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7155011363",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0107",
+      "title": "RecMem: Recurrence-based Memory Consolidation for Efficient and Effective Long-Running LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 基于循环的记忆巩固机制，针对长程LLM智能体的记忆效率与效果，同时涉及记忆压缩更新。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-b76a75439b",
+          "doi": null,
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7161655395",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-b378fdff42",
+          "doi": "10.18653/v1/2026.findings-acl.1619",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7166837919",
+          "venue": null,
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-076b7b12ac",
+          "doi": "10.48550/arxiv.2605.16045",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7161593180",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0124",
+      "title": "Caching for the Future: Scrub Jay Episodic Memory Principles for Agent Memory Systems",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 关注按内容类型设置条件记忆持久性，以缓解过期事实污染检索上下文的问题，涉及更新策略与可靠性。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-139038746f",
+          "doi": "10.48550/arxiv.2608.04746",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7196925868",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0131",
+      "title": "Memory poisoning and secure multi-agent systems",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 综述或讨论多智能体系统中的记忆投毒与安全问题。",
+      "evidence_count": 5,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-bd478d0397",
+          "doi": "10.48550/arxiv.2603.20357",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7140185414",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0133",
+      "title": "Causal Episodic Memory for Feedback-Driven Agent Repair",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 研究将修复结果写入因果情节记忆以支持后续任务，涉及记忆更新与复用机制。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-0c9d6a7671",
+          "doi": "10.48550/arxiv.2608.05906",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7201853355",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0166",
+      "title": "COUNTERMEM: World-Model Verified Counter-Factual Memory for Language Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 通过反事实的世界模型验证来更新智能体记忆，涉及记忆内容的修正与可靠性控制。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-f42ab99389",
+          "doi": "10.48550/arxiv.2609.31874",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7214729686",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0173",
+      "title": "FSFM: A Biologically-Inspired Framework for Selective Forgetting of Agent Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 提出受生物启发的选择性遗忘框架，聚焦记忆保留之外的删除与遗忘机制。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-063b2a04bb",
+          "doi": "10.48550/arxiv.2604.20300",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7155377282",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0175",
+      "title": "SF-AMS: Strategic Forgetting for Structured Memory in LLM Agent",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 提出战略遗忘框架，通过建模长期依赖维护紧凑高价值记忆。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-5fa22ed0fa",
+          "doi": "10.48550/arxiv.2607.22562",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7171523387",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0178",
+      "title": "Forget to Improve: On-Device LLM-Agent Continual Learning via Budget-Curated Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 研究预算管理下的记忆遗忘与写时安全，涉及记忆舍弃与攻击面。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-eb5128aa27",
+          "doi": "10.48550/arxiv.2606.25115",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7165948101",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0179",
+      "title": "Control-Plane Placement Shapes Forgetting: An Architectural Study of Agent Memory Across Thirteen System Configurations",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 比较十三种系统配置下控制平面位置对遗忘失效模式的影响，属于记忆更新/删除机制的系统性架构分析。",
+      "evidence_count": 1,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-af45fb5f23",
+          "doi": "10.48550/arxiv.2606.15903",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7164886747",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0180",
+      "title": "What Should an Agent Forget? Separating What Is Stored from What Is Used",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 区分存储与使用，处理过时事实的遗忘与按需使用。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-e588e0316f",
+          "doi": "10.48550/arxiv.2609.10263",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7212129486",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0181",
+      "title": "Novel Memory Forgetting Techniques for Autonomous AI Agents: Balancing Relevance and Efficiency",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 研究记忆遗忘技术以平衡相关性与效率，并处理错误记忆传播。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-a997367855",
+          "doi": "10.48550/arxiv.2604.02280",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7148665208",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0193",
+      "title": "When Continual Learning Moves to Memory: A Study of Experience Reuse in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 研究外部经验记忆中的稳定性-可塑性困境，聚焦持续学习与记忆更新问题。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-78b72d11f0",
+          "doi": "10.48550/arxiv.2604.27003",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7159644924",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0199",
+      "title": "When to Forget: A Memory Governance Primitive",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 提出记忆治理原语决定可信/抑制/弃用记忆，直接回应更新与可靠性。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-492f516ec1",
+          "doi": "10.48550/arxiv.2604.12007",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7154498745",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0205",
+      "title": "Belief Memory: Agent Memory Under Partial Observability",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 引入信念记忆处理部分可观测性，涉及记忆不确定性与状态更新。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-ded813c06e",
+          "doi": "10.48550/arxiv.2605.05583",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7160593918",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0206",
+      "title": "Forgetting is Not Always Bad: A Neuro-Inspired Memory Repair Mechanism for Poisoned LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 提出神经启发的记忆修复机制以应对记忆投毒，属于可靠性与遗忘防御。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-658a302fbc",
+          "doi": "10.48550/arxiv.2610.13267",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7221577566",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0214",
+      "title": "Agentic Learner with Grow-and-Refine Multimodal Semantic Memory",
+      "year": 2025,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 提出增长-精化式多模态语义记忆，强调记忆的组织更新与可复用性，反对简单轨迹式记忆。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-3d6948af25",
+          "doi": "10.48550/arxiv.2511.21678",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4416781468",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0215",
+      "title": "Question Answering under Temporal Conflict: Evaluating and Organizing Evolving Knowledge with LLMs",
+      "year": 2025,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 挑战现实时间冲突下的问答，直接评测并组织演化知识，覆盖记忆更新与遗忘。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-e44b2022ee",
+          "doi": "10.48550/arxiv.2506.07270",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4417128722",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0222",
+      "title": "SodaMem: Evidence-Grounded Temporal Graph Memory for LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 时序图记忆强调当前真实性与来源追踪，处理更新与冲突。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-a8bd0f5fd1",
+          "doi": "10.48550/arxiv.2608.08055",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7202195765",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0246",
+      "title": "When Personal Memory Has No Single Answer: Evaluating LLM Agents under Irreducible Conflict",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 研究不可消解冲突下记忆的评估，涉及冲突处理与更新。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-c740bf68fe",
+          "doi": "10.48550/arxiv.2608.13921",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7203647534",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0280",
+      "title": "Darwinian Memory: A Training-Free Self-Regulating Memory System for GUI Agent Evolution",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 提出免训练的达尔文式自调节记忆系统，强调GUI智能体在动态环境中记忆的更新与演进。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-9955da4d59",
+          "doi": "10.48550/arxiv.2601.22528",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7127183492",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0282",
+      "title": "AI Agents Need Memory Control Over More Context",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 关注长多轮交互中的记忆控制与漂移问题，直接针对记忆可靠性问题。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-1ae80fbf98",
+          "doi": "10.48550/arxiv.2601.11653",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7125181167",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0289",
+      "title": "Synthius-Mem: Brain-Inspired Hallucination-Resistant Persona Memory Achieving 94.4% Memory Accuracy and 99.6% Adversarial Robustness on LoCoMo",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 脑启发式抗幻觉记忆，强调记忆准确性与对抗鲁棒性。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-c6b3728e98",
+          "doi": "10.48550/arxiv.2604.11563",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7154368881",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0290",
+      "title": "SIRIN: A Unified Toolkit for Detecting Contextual Hallucinations in Retrieval-Augmented and Memory-Grounded LLM Systems",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 检测记忆接地系统中的上下文幻觉，属记忆可靠性评测工具。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-0e348ff0ef",
+          "doi": "10.48550/arxiv.2608.00033",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7172387753",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0305",
+      "title": "MemMorph: Tool Hijacking in LLM Agents via Memory Poisoning",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究通过记忆投毒劫持工具调用，属于记忆安全问题。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-ae837fd432",
+          "doi": "10.48550/arxiv.2605.26154",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7162528574",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0306",
+      "title": "MemForm: Benchmarking Memory Formation Poisoning in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 聚焦记忆形成阶段的投毒攻击基准与接口特征。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-69d9e7b289",
+          "doi": "10.48550/arxiv.2610.14431",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7221777130",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0309",
+      "title": "From Untrusted Input to Trusted Memory: A Systematic Study of Memory Poisoning Attacks in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 系统研究LLM智能体记忆投毒攻击，属于可靠性核心研究。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-4701e58446",
+          "doi": "10.48550/arxiv.2606.04329",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7163550999",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0310",
+      "title": "CAPTURE: Disentangling Preference Drift from Memory Poisoning in Personalized LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 研究区分偏好漂移与记忆投毒，涉及冲突更新与安全防御。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-0f35d72895",
+          "doi": "10.48550/arxiv.2609.02265",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7207681694",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0312",
+      "title": "The Price of Safety: Benign-Case Utility and Token Overhead of Memory-Poisoning Defenses in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 评估记忆投毒防御的良性效用成本与实用性，属于记忆安全可靠性的评测研究。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-b93a9a91ce",
+          "doi": "10.48550/arxiv.2609.22818",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7214002639",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0313",
+      "title": "SMSR: Certified Defence Against Runtime Memory Poisoning in Persistent LLM Agent Systems",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 面向持久记忆系统的运行时记忆投毒提出认证防御。",
+      "evidence_count": 5,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-e406f567d3",
+          "doi": "10.48550/arxiv.2606.12703",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7164580021",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0318",
+      "title": "MemoryGraft: Persistent Compromise of LLM Agents via Poisoned Experience Retrieval",
+      "year": 2025,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究通过中毒经验检索持久攻陷智能体，属记忆投毒与安全。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-55934c6fb7",
+          "doi": "10.48550/arxiv.2512.16962",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7116866437",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0319",
+      "title": "MemPoison: Bypassing Selective Memory Mechanisms to Plant Backdoors in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究针对选择性记忆机制的后门植入攻击，提示LLM智能体记忆的安全脆弱性。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-577d2745bf",
+          "doi": "10.48550/arxiv.2605.29960",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7162755822",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0320",
+      "title": "Understanding Stage-Wise Utility-Risk Trade-offs in LLM Agent Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 分析记忆机制的效用与安全风险权衡，跨组织、更新和可靠性。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-bb7b6a78b5",
+          "doi": "10.48550/arxiv.2608.30177",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7204958966",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0321",
+      "title": "MemSecBench: Tracking Agent Memory Poisoning from Persistence to Consequence and Repair",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 专门追踪记忆投毒从持久化到后果与修复的全过程，属于记忆安全基准工作。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-6b51eb1b92",
+          "doi": "10.48550/arxiv.2607.27080",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7171806674",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0322",
+      "title": "Self-Propagating Misalignment in LLM Agents, and Why Auditing or Disabling Memory Is Not Enough",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 讨论智能体自身错误写入记忆导致未来错位问题，涉及记忆链中的可靠性传染问题。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-570e2cc4e0",
+          "doi": "10.48550/arxiv.2610.04083",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7220654417",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0324",
+      "title": "MAPLE-Guard: Memory-Aware Link Enforcement Against Memory-Link Poisoning in Multi-Agent Systems",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 针对多智能体系统中共享记忆链接的投毒攻击与防御，属于记忆可靠性和安全防御研究。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-61d4e84adb",
+          "doi": "10.48550/arxiv.2608.00426",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7172436675",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0325",
+      "title": "MemLineage: Lineage-Guided Enforcement for LLM Agent Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 通过来源与派生血缘增强记忆条目可信度，防止恶意内容回注。",
+      "evidence_count": 5,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-8442850664",
+          "doi": "10.48550/arxiv.2605.14421",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7161300865",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0327",
+      "title": "Agent Security Bench (ASB): Formalizing and Benchmarking Attacks and Defenses in LLM-based Agents",
+      "year": 2024,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 系统基准LLM智能体攻击与防御，含记忆机制相关安全问题测评。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-666deb2c2b",
+          "doi": "10.48550/arxiv.2410.02644",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4403884175",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0329",
+      "title": "A Framework for Formalizing LLM Agent Security",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | LLM智能体安全形式化框架，可用于分析记忆驱动的动作与权限、来源等可靠性问题。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-fd2a682be4",
+          "doi": "10.48550/arxiv.2603.19469",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7140118138",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0330",
+      "title": "LoopTrap: Termination Poisoning Attacks on LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 针对LLM智能体迭代循环的终止投毒攻击，与记忆更新/执行循环中的安全风险相关。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-58071e9dec",
+          "doi": "10.48550/arxiv.2605.05846",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7160599312",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0333",
+      "title": "SuperLocalMemory: Privacy-Preserving Multi-Agent Memory with Bayesian Trust Defense Against Memory Poisoning",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 用贝叶斯信任评分防御记忆投毒，针对多代理记忆的安全防护机制。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-85436e8a97",
+          "doi": null,
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7133570866",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-b15aabc400",
+          "doi": "10.48550/arxiv.2603.02240",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7133480904",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-ce673edaba",
+          "doi": "10.2139/ssrn.6273819",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7153109106",
+          "venue": "SSRN Electronic Journal",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-20dc01931f",
+          "doi": "10.5281/zenodo.18709669",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7130722990",
+          "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0334",
+      "title": "When Malicious Instructions Persist: Persistent Memory Poisoning Attack on Harness-Based Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 研究恶意指令写入持久记忆并跨会话存活的攻击机制，直接对应记忆可靠性威胁。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-6f567c8316",
+          "doi": "10.48550/arxiv.2609.13889",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7213366265",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0335",
+      "title": "AgentLAB: Benchmarking LLM Agents against Long-Horizon Attacks",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 长时程攻击基准测试，涉及利用多轮交互与记忆机制的LLM智能体脆弱性。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-3afae3545d",
+          "doi": "10.48550/arxiv.2602.16901",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7130734783",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0336",
+      "title": "Towards Security-Auditable LLM Agents: A Unified Graph Representation",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 用统一图表示审计LLM智能体，含状态记忆管理，面向安全与来源追踪。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-651597834a",
+          "doi": "10.48550/arxiv.2605.06812",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7160827842",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0337",
+      "title": "Zombie Agents: Persistent Control of Self-Evolving LLM Agents via Self-Reinforcing Injections",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 揭示自我进化智能体长期记忆的投毒风险，属于记忆可靠性安全问题。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-bd235f163a",
+          "doi": "10.48550/arxiv.2602.15654",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7130430182",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0338",
+      "title": "Controlled Memory Interference in Continual LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 研究记忆干扰与更新，涉及强化、修改与冲突。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-867dbd2c16",
+          "doi": "10.48550/arxiv.2608.07622",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7202159493",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0339",
+      "title": "The Epistemics of Agent Memory: Measuring, and Governing, the Consolidation Decision in Long-Horizon LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 研究记忆巩固决策中的保留、压缩、抽象与遗忘机制。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-7f31da6b37",
+          "doi": "10.48550/arxiv.2609.33013",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7214768363",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0341",
+      "title": "Auditing Provenance Sensitivity in LLM Agent Action Selection",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 评估智能体对记忆等混杂上下文中证据来源的敏感性，直接关系到记忆来源追踪的可靠性。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-fdd6166e3e",
+          "doi": "10.48550/arxiv.2607.20827",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7170461370",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0342",
+      "title": "Memory as Infrastructure: Reliability Engineering for Persistent Agent Memory in Months-Long LLM-Assisted Development",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 从可靠性工程视角分析长期持久智能体记忆的基础设施问题。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-beafe40e04",
+          "doi": "10.48550/arxiv.2609.05510",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7212050121",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0344",
+      "title": "Semantic Behavioral Watermarking: Paraphrase-Robust and Forgery-Resistant Provenance for LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 行为水印用于LLM智能体来源追踪，与记忆信息来源可靠性及防伪相关。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        3,
+        4
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-068426c1f6",
+          "doi": "10.48550/arxiv.2610.08668",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7220959652",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0347",
+      "title": "GraphEcho: Structural Redundancy and Evidence Provenance in LLM Graph Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 测试图智能体是否把记忆中的重复证据误判为独立佐证，涉及记忆信息可靠性与来源混淆。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        4
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-1bd8c3a081",
+          "doi": "10.48550/arxiv.2609.17695",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7213531353",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0348",
+      "title": "AGATE: Provenance-Based Runtime Defense Against Compositional Attacks on LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 基于来源和权限的运行时防御，可关联记忆写入时的数据来源追踪与投毒防御。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-10de6596da",
+          "doi": "10.48550/arxiv.2609.30830",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7214603931",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0367",
+      "title": "STALE: Can LLM Agents Know When Their Memories Are No Longer Valid?",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 评测了智能体识别记忆失效的能力，对应记忆过期与更新问题。",
+      "evidence_count": 1,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-5f4e0eab2e",
+          "doi": "10.48550/arxiv.2605.06527",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7160611021",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0396",
+      "title": "MemConflict: Evaluating Long-Term Memory Systems Under Memory Conflicts",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 直接评测记忆冲突场景下的长期记忆系统表现，覆盖更新与可靠性。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-ac2b9b75c3",
+          "doi": "10.48550/arxiv.2605.20926",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7161951393",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0402",
+      "title": "PersistBench: When Should Long-Term Memories Be Forgotten by LLMs?",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 基准测试研究记忆何时应被遗忘，直接对应记忆更新与过期问题。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-c853d3088e",
+          "doi": "10.48550/arxiv.2602.01146",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7127331648",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0414",
+      "title": "Temporal Evidence Forests for Long-Horizon Multi-Party Conversational Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 提出时间证据森林处理多方长期互动中的状态更新与变化追踪，属更新机制。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-24d0dc970b",
+          "doi": "10.48550/arxiv.2610.12874",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7221514248",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0441",
+      "title": "Remember by Asking: Retrieval-Induced Memory Evolution for LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 提出检索诱导的记忆演化，在写入时利用未来检索需求改进记忆形成，属更新方法。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-55c2b2c874",
+          "doi": "10.48550/arxiv.2609.34438",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7214713171",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0451",
+      "title": "Can Agents Forget When Asked? A Benchmark for Memory Unlearning in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 面向 LLM 智能体记忆遗忘/删除的基准，涉及按请求精确删除与评测，对应更新与可靠性。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-af48b4b878",
+          "doi": "10.48550/arxiv.2610.18052",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7221750226",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0558",
+      "title": "Use and Disuse: Intent-Structured Experience Consolidation for Memory and Learning in LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | Hippocam层次记忆与经验巩固，涉及记忆更新与组织。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-9c7a8fd89f",
+          "doi": "10.48550/arxiv.2610.12124",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7221079322",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    }
+  ],
+  "priority_review_candidates": [
+    {
+      "work_id": "W0001",
+      "title": "Generative Agents: Interactive Simulacra of Human Behavior",
+      "year": 2023,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | 生成式智能体开创性工作，提出了记忆流、检索和反思机制，是LLM智能体长期记忆研究的基础。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-a34fd98045",
+          "doi": "10.1145/3586183.3606763",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4387835442",
+          "venue": "ACM Symposium on User Interface Software and Technology (UIST)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0002",
+      "title": "MemGPT: Towards LLMs as Operating Systems",
+      "year": 2023,
+      "status": "included",
+      "branch": "background",
+      "reason": "branch=background | MemGPT 提出虚拟上下文管理，是 LLM 操作系统式分层记忆的奠基性工作。",
+      "evidence_count": 7,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-4c0d1aae08",
+          "doi": "10.48550/arxiv.2310.08560",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4387636003",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0003",
+      "title": "MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+      "year": 2024,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | MemoryBank 为 LLM 增加长期记忆，关注组织与复用。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-d0c3f66ed9",
+          "doi": "10.1609/aaai.v38i17.29946",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4393147158",
+          "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0004",
+      "title": "Reflexion: language agents with verbal reinforcement learning",
+      "year": 2023,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | Reflexion通过口头强化学习存储经验作为记忆，用于失败后的改进，涉及从经验中更新知识。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-d94d7cbf03",
+          "doi": "10.52202/075280-0377",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7133222210",
+          "venue": "neural information processing systems",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0005",
+      "title": "Evaluating Very Long-Term Conversational Memory of LLM Agents",
+      "year": 2024,
+      "status": "candidate",
+      "branch": "unassigned",
+      "reason": null,
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-50464ea0c3",
+          "doi": "10.18653/v1/2024.acl-long.747",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4402684150",
+          "venue": "Annual Meeting of the Association for Computational Linguistics (ACL)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0006",
+      "title": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+      "year": 2024,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | LongMemEval 基准的审计包，用于评测长期交互记忆及可靠性，属评测工作。",
+      "evidence_count": 6,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-33126651f1",
+          "doi": "10.48550/arxiv.2410.10813",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4403571340",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "pdf_ok"
+        }
+      ]
+    },
+    {
+      "work_id": "W0140",
+      "title": "Cognitive Architectures for Language Agents",
+      "year": 2023,
+      "status": "included",
+      "branch": "survey",
+      "reason": "branch=survey | 从认知架构角度系统梳理语言智能体，明确记忆作为核心模块并给出组织与使用分类。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-f39a700488",
+          "doi": "10.48550/arxiv.2309.02427",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4386528753",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0618",
+      "title": "ExpeL: LLM Agents Are Experiential Learners",
+      "year": 2024,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | ExpeL利用经验池跨任务保存和复用成功经验，涉及外部记忆的组织与提取，是智能体经验记忆的代表工作。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-8d685d5811",
+          "doi": "10.1609/aaai.v38i17.29936",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4393160747",
+          "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0678",
+      "title": "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+      "year": 2023,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | Voyager用外部技能库实现跨任务记忆组织与复用，是LLM智能体长期记忆的代表性系统。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-3c1952b85a",
+          "doi": "10.48550/arxiv.2305.16291",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4378505261",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0679",
+      "title": "RecurrentGPT: Interactive Generation of (Arbitrarily) Long Text",
+      "year": 2023,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | 构建语言级循环记忆模拟RNN机制进行长文本生成，体现外部记忆的写入与复用。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-2cd1d48357",
+          "doi": "10.48550/arxiv.2305.13304",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4377865938",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0680",
+      "title": "RET-LLM: Towards a General Read-Write Memory for Large Language Models",
+      "year": 2023,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | 提出通用读写记忆单元，使LLM显式存取知识，属于记忆组织结构。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-5db7f1e224",
+          "doi": "10.48550/arxiv.2305.14322",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4378509422",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0681",
+      "title": "A-Mem: Agentic Memory for LLM Agents",
+      "year": 2025,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | 明确聚焦LLM智能体的记忆组织与使用，提出Agentic Memory，针对现有记忆系统缺乏复杂组织的问题。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-535940410e",
+          "doi": "10.52202/085713-0593",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4407759090",
+          "venue": "neural information processing systems",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0682",
+      "title": "Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory",
+      "year": 2025,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | Mem0 架构，提出可扩展长期记忆方案，涉及组织与可靠性。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-e77d830d6c",
+          "doi": "10.3233/faia251160",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4415428439",
+          "venue": "Frontiers in artificial intelligence and applications",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0683",
+      "title": "HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models",
+      "year": 2024,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | HippoRAG 受神经科学启发，提出长期记忆组织方案。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-d6ea9371a9",
+          "doi": "10.52202/079017-1902",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4415797504",
+          "venue": "neural information processing systems",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0684",
+      "title": "Zep: A Temporal Knowledge Graph Architecture for Agent Memory",
+      "year": 2025,
+      "status": "included",
+      "branch": "organize",
+      "reason": "branch=organize | 提出基于时间知识图谱的智能体记忆层，在记忆检索评测中超越MemGPT，直接涉及跨会话外部记忆的组织与评测。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-3a50394dcb",
+          "doi": "10.48550/arxiv.2501.13956",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4406840428",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0261",
+      "title": "HaluMem: Evaluating Hallucinations in Memory Systems of Agents",
+      "year": 2025,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | 系统评测记忆幻觉，覆盖存储与检索中的错误。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-859a179acc",
+          "doi": "10.48550/arxiv.2511.03506",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4416019921",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0397",
+      "title": "Beyond A Million Tokens: Benchmarking and Enhancing Long-Term Memory in LLMs",
+      "year": 2025,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | 提出超百万token的长期记忆与长上下文基准，并增强叙事连贯性。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-c56447ea9a",
+          "doi": "10.48550/arxiv.2510.27246",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4415917284",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0415",
+      "title": "MEMTRACK: Evaluating Long-Term Memory and State Tracking in Multi-Platform Dynamic Agent Environments",
+      "year": 2025,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | 动态企业环境中的长期记忆与状态跟踪评测基准。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-743df2778f",
+          "doi": "10.48550/arxiv.2510.01353",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4414815971",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    }
+  ],
+  "boundary_and_artifact_review": [
+    {
+      "work_id": "W0051",
+      "title": "Data and scripts for: Same answers, different scores: an empirical study of evaluation choices in long-term memory benchmarks for LLM agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | 长期记忆基准评测选择偏差的实证数据，属于评测公平性研究。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-5065d21943",
+          "doi": "10.5281/zenodo.23040522",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7214746055",
+          "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0052",
+      "title": "MERIT: released runs and episode traces for a cost-aware evaluation of long-term memory in tool-using LLM agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | 发布成本感知的长期记忆评测运行与轨迹数据，对应评测基准与成本考量。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-7055533495",
+          "doi": "10.5281/zenodo.21591178",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7171290370",
+          "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0171",
+      "title": "From Recall to Forgetting: Benchmarking Long-Term Memory for Personalized Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | 标题表明该工作构建涵盖召回与遗忘的个性化代理长期记忆基准，题名范围明确落入评测范畴。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-022e2c2377",
+          "doi": null,
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7155574661",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-822e82088d",
+          "doi": "10.18653/v1/2026.findings-acl.1337",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7166889077",
+          "venue": null,
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        },
+        {
+          "source_id": "src-ee546a113e",
+          "doi": "10.48550/arxiv.2604.20006",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7155351437",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0172",
+      "title": "From Recall to Forgetting: Benchmarking Long-Term Memory for Personalized Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | 基准测试关注回忆与遗忘，区别于纯检索评估，是长期记忆评测的重要工作。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-31fe863add",
+          "doi": "10.48448/gvc8-fs67",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7168739884",
+          "venue": "Underline Science Inc.",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0188",
+      "title": "CreatorMemBench v1.0: A Lifecycle Benchmark for Mutable Creator-Agent Memory",
+      "year": 2026,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | CreatorMemBench 基准评估可变长期记忆，覆盖更新、遗忘、复活等生命周期。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-7619670e90",
+          "doi": "10.5281/zenodo.23371367",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7221800749",
+          "venue": "Zenodo (CERN European Organization for Nuclear Research)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0215",
+      "title": "Question Answering under Temporal Conflict: Evaluating and Organizing Evolving Knowledge with LLMs",
+      "year": 2025,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 挑战现实时间冲突下的问答，直接评测并组织演化知识，覆盖记忆更新与遗忘。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-e44b2022ee",
+          "doi": "10.48550/arxiv.2506.07270",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4417128722",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0242",
+      "title": "Measuring Iterative Temporal Reasoning with Time Puzzles",
+      "year": 2026,
+      "status": "included",
+      "branch": "eval",
+      "reason": "branch=eval | 提出时间拼图基准评测LLM的迭代时间推理，关联记忆评测中的时间条件与遗忘场景。",
+      "evidence_count": 0,
+      "evidence_pages": [],
+      "source_versions": [
+        {
+          "source_id": "src-92f472c6b8",
+          "doi": "10.48550/arxiv.2601.07148",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7123703961",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0280",
+      "title": "Darwinian Memory: A Training-Free Self-Regulating Memory System for GUI Agent Evolution",
+      "year": 2026,
+      "status": "included",
+      "branch": "update",
+      "reason": "branch=update | 提出免训练的达尔文式自调节记忆系统，强调GUI智能体在动态环境中记忆的更新与演进。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-9955da4d59",
+          "doi": "10.48550/arxiv.2601.22528",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7127183492",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0289",
+      "title": "Synthius-Mem: Brain-Inspired Hallucination-Resistant Persona Memory Achieving 94.4% Memory Accuracy and 99.6% Adversarial Robustness on LoCoMo",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 脑启发式抗幻觉记忆，强调记忆准确性与对抗鲁棒性。",
+      "evidence_count": 3,
+      "evidence_pages": [
+        1,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-c6b3728e98",
+          "doi": "10.48550/arxiv.2604.11563",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7154368881",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0327",
+      "title": "Agent Security Bench (ASB): Formalizing and Benchmarking Attacks and Defenses in LLM-based Agents",
+      "year": 2024,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 系统基准LLM智能体攻击与防御，含记忆机制相关安全问题测评。",
+      "evidence_count": 4,
+      "evidence_pages": [
+        1,
+        2,
+        3
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-666deb2c2b",
+          "doi": "10.48550/arxiv.2410.02644",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W4403884175",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    },
+    {
+      "work_id": "W0330",
+      "title": "LoopTrap: Termination Poisoning Attacks on LLM Agents",
+      "year": 2026,
+      "status": "included",
+      "branch": "reliability",
+      "reason": "branch=reliability | 针对LLM智能体迭代循环的终止投毒攻击，与记忆更新/执行循环中的安全风险相关。",
+      "evidence_count": 2,
+      "evidence_pages": [
+        1
+      ],
+      "source_versions": [
+        {
+          "source_id": "src-58071e9dec",
+          "doi": "10.48550/arxiv.2605.05846",
+          "arxiv_id": null,
+          "url": "https://openalex.org/W7160599312",
+          "venue": "arXiv (Cornell University)",
+          "publication_status": null,
+          "fulltext_status": "unknown"
+        }
+      ]
+    }
+  ],
+  "core_pool_at_capture": {
+    "anchors": [
+      {
+        "work_id": "W0002",
+        "title": "MemGPT: Towards",
+        "has_evidence": true
+      },
+      {
+        "work_id": "W0003",
+        "title": "MemoryBank:",
+        "has_evidence": false
+      },
+      {
+        "work_id": "W0006",
+        "title": "LongMemEval:",
+        "has_evidence": true
+      },
+      {
+        "work_id": "W0678",
+        "title": "Voyager: An Open-Ended",
+        "has_evidence": false
+      },
+      {
+        "work_id": "W0679",
+        "title": "RecurrentGPT:",
+        "has_evidence": false
+      },
+      {
+        "work_id": "W0680",
+        "title": "RET-LLM:",
+        "has_evidence": false
+      },
+      {
+        "work_id": "W0682",
+        "title": "Mem0: Building",
+        "has_evidence": false
+      },
+      {
+        "work_id": "W0683",
+        "title": "HippoRAG:",
+        "has_evidence": false
+      },
+      {
+        "work_id": "W0684",
+        "title": "Zep: A Temporal",
+        "has_evidence": false
+      },
+      {
+        "work_id": "W0618",
+        "title": "ExpeL: LLM Agents",
+        "has_evidence": false
+      }
+    ],
+    "formal": [
+      "W0003",
+      "W0008",
+      "W0011",
+      "W0013",
+      "W0029",
+      "W0030",
+      "W0038",
+      "W0045",
+      "W0046",
+      "W0047",
+      "W0048",
+      "W0051",
+      "W0052",
+      "W0053",
+      "W0067",
+      "W0092",
+      "W0093",
+      "W0099",
+      "W0102",
+      "W0106",
+      "W0107",
+      "W0111",
+      "W0113",
+      "W0171",
+      "W0172",
+      "W0177",
+      "W0185",
+      "W0186",
+      "W0188",
+      "W0259",
+      "W0333",
+      "W0379",
+      "W0380",
+      "W0382",
+      "W0392",
+      "W0394",
+      "W0403",
+      "W0411",
+      "W0438",
+      "W0439",
+      "W0443",
+      "W0450",
+      "W0459",
+      "W0475",
+      "W0516",
+      "W0547",
+      "W0561",
+      "W0618",
+      "W0682",
+      "W0683"
+    ]
+  }
+}

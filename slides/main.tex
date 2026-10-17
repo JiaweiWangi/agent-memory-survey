@@ -1,0 +1,91 @@
+\documentclass[UTF8, aspectratio=169]{ctexbeamer}
+\usepackage{booktabs}
+\usepackage{url}
+
+\title{大模型智能体的长期记忆：\\组织、更新与可靠性评测综述}
+\subtitle{学术写作课程汇报 \quad 智能体 4 min + 研究 4 min}
+\author{成员 A \and 成员 B \and 成员 C}  % 待真人姓名替换
+\date{2026 年 10 月}
+
+\begin{document}
+
+% ============ 第 1 页（0:30）作业目标 ============
+\begin{frame}{作业目标：为什么需要证据与人工核验}
+\begin{itemize}
+  \item 任务：前沿问题文献综述（≥30 篇真实文献）+ 智能体完成综述
+  \item 选题：LLM 智能体的\textbf{跨会话外部记忆}——组织、更新、可靠性
+  \item 两条底线：\textbf{引用可回查}（反幻觉）与\textbf{人工核验}（不代签）
+\end{itemize}
+\end{frame}
+
+% ============ 第 2 页（1:00）智能体架构 ============
+\begin{frame}{智能体架构与自适应工具选择（1/2）}
+\begin{itemize}
+  \item 协调 Agent：观察 RQ 覆盖缺口 → 选择工具 → 执行 → 记录
+  \item 工具层：OpenAlex/Crossref/arXiv 检索、DOI/arXiv ID 去重、
+        PDF 页级提取、证据/陈述/记忆事件溯源
+  \item 持久化：追加式 JSONL，跨运行可恢复（supersedes 链）
+\end{itemize}
+\end{frame}
+
+% ============ 第 3 页（1:20）真实决策路径 ============
+\begin{frame}{一条真实的``论文—证据—陈述''路径（2/2）}
+% G4 后填入：具体案例（如 LongMemEval 证据 → claim → 草稿句），
+% 展示逐字验证拦截与记忆更新
+\begin{itemize}
+  \item 逐字签名验证：改写/拼接被拒，实测拦截 N 次
+  \item 缺口驱动补检：模型自选检索词（非脚本预设）
+  \item 诚实失败：正文不可得 → 标注待核验，不编造
+\end{itemize}
+\end{frame}
+
+% ============ 第 4 页（0:50）评估与人工验证 ============
+\begin{frame}{小规模评估、失败案例与人工验证职责}
+% G4 评估执行后填入结果表与一个失败案例
+\begin{itemize}
+  \item 12 冻结案例 × A/B/C 条件（无记忆/上下文注入/结构化记忆）
+  \item 自动检查 + 真人按 rubric 评分
+  \item 人工核验包：文献身份、边界判定、claims 三层队列
+\end{itemize}
+\end{frame}
+
+% ============ 第 5 页（0:40）核心问题与边界 ============
+\begin{frame}{长期记忆的核心问题与研究边界}
+\begin{itemize}
+  \item 为什么长上下文 / 静态 RAG 不够：跨会话、可写、需更新
+  \item 五个研究问题（RQ1 定义边界 … RQ5 评测公平性）
+  \item 综述方法：多源检索 + 两轮筛选 + 版本去重（流程图）
+\end{itemize}
+\end{frame}
+
+% ============ 第 6 页（1:20）研究脉络 ============
+\begin{frame}{研究脉络与主要方法类别}
+% G4 谱系图填入：上下文工程（MemGPT）→ 摘要/分层（MemoryBank）
+% → 图结构（A-MEM/Zep/HippoRAG）→ 更新与遗忘 → 可靠性
+\begin{itemize}
+  \item 组织与表示：分页、摘要卡片、图、经验池
+  \item 更新与遗忘：再巩固、选择性遗忘、时间知识
+  \item 可靠性：投毒攻击、来源追踪、可信巩固
+\end{itemize}
+\end{frame}
+
+% ============ 第 7 页（1:10）主要发现 ============
+\begin{frame}{记忆更新、冲突与可靠性的主要发现}
+% 基于证据的发现填入（带引用与数字）
+\begin{itemize}
+  \item 发现 1（待填，带引用）
+  \item 发现 2（待填，带引用）
+  \item 发现 3（待填，带引用）
+\end{itemize}
+\end{frame}
+
+% ============ 第 8 页（0:30）评测缺口与结论 ============
+\begin{frame}{评测缺口、主要挑战和结论}
+\begin{itemize}
+  \item 评测缺口：跨会话更新能力考察不足；结果难公平比较
+  \item 挑战：时效与冲突、错误传播、成本
+  \item 结论（待填）
+\end{itemize}
+\end{frame}
+
+\end{document}

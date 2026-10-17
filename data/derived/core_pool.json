@@ -1,0 +1,106 @@
+{
+ "anchors": [
+  {
+   "work_id": "W0002",
+   "title": "MemGPT: Towards",
+   "has_evidence": true
+  },
+  {
+   "work_id": "W0003",
+   "title": "MemoryBank:",
+   "has_evidence": false
+  },
+  {
+   "work_id": "W0006",
+   "title": "LongMemEval:",
+   "has_evidence": true
+  },
+  {
+   "work_id": "W0678",
+   "title": "Voyager: An Open-Ended",
+   "has_evidence": false
+  },
+  {
+   "work_id": "W0679",
+   "title": "RecurrentGPT:",
+   "has_evidence": false
+  },
+  {
+   "work_id": "W0680",
+   "title": "RET-LLM:",
+   "has_evidence": false
+  },
+  {
+   "work_id": "W0682",
+   "title": "Mem0: Building",
+   "has_evidence": false
+  },
+  {
+   "work_id": "W0683",
+   "title": "HippoRAG:",
+   "has_evidence": false
+  },
+  {
+   "work_id": "W0684",
+   "title": "Zep: A Temporal",
+   "has_evidence": false
+  },
+  {
+   "work_id": "W0618",
+   "title": "ExpeL: LLM Agents",
+   "has_evidence": false
+  }
+ ],
+ "formal": [
+  "W0003",
+  "W0008",
+  "W0011",
+  "W0013",
+  "W0029",
+  "W0030",
+  "W0038",
+  "W0045",
+  "W0046",
+  "W0047",
+  "W0048",
+  "W0051",
+  "W0052",
+  "W0053",
+  "W0067",
+  "W0092",
+  "W0093",
+  "W0099",
+  "W0102",
+  "W0106",
+  "W0107",
+  "W0111",
+  "W0113",
+  "W0171",
+  "W0172",
+  "W0177",
+  "W0185",
+  "W0186",
+  "W0188",
+  "W0259",
+  "W0333",
+  "W0379",
+  "W0380",
+  "W0382",
+  "W0392",
+  "W0394",
+  "W0403",
+  "W0411",
+  "W0438",
+  "W0439",
+  "W0443",
+  "W0450",
+  "W0459",
+  "W0475",
+  "W0516",
+  "W0547",
+  "W0561",
+  "W0618",
+  "W0682",
+  "W0683"
+ ]
+}

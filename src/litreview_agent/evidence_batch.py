@@ -73,7 +73,8 @@ def _parse_json_array(text: str) -> Optional[list[dict]]:
 
 def run_evidence_batch(data_dir: Path, backend: AnthropicBackend,
                        max_works: Optional[int] = None,
-                       pages_per_work: int = 3) -> dict[str, Any]:
+                       pages_per_work: int = 3,
+                       only_work_ids: Optional[list[str]] = None) -> dict[str, Any]:
     run_id = f"eb-{now_iso()[11:13]}{now_iso()[14:16]}{now_iso()[17:19]}"
     events_path = data_dir.parent / "runs" / run_id / "events.jsonl"
     events_path.parent.mkdir(parents=True, exist_ok=True)
@@ -92,6 +93,8 @@ def run_evidence_batch(data_dir: Path, backend: AnthropicBackend,
                        "background": 4, "organize": 5}
     queue = []
     for wid, recs in works.items():
+        if only_work_ids is not None and wid not in only_work_ids:
+            continue
         if not any(r.inclusion_status == "included" for r in recs):
             continue
         if wid in existing:

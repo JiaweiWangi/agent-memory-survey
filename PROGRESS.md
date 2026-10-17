@@ -66,19 +66,23 @@
 - 测试：`uv run pytest` 9/9 通过（版本去重×2、记忆有效性、证据不自动提升、摘录验证接受/拒绝×2、引用检查×2、重启恢复）。
 - 关键工程决策（正文提取）：pdftotext raw 模式替代 -layout（双栏论文按逻辑顺序读取，连续摘录可验证）；摘录验证签名剔除空白与连字符（排版产物），内容字符序列仍逐字严格。
 
-### G3：完整证据库（进行中，2026-10-17）
+### G3：完整证据库（策略对齐后重新执行中，2026-10-17）
 
-- [ ] 至少 30 项独立研究有已读相关正文与可用证据，目标 35–45 项。（批量提取进行中：211 项通道内 included 研究排队，分支优先级 update→reliability→eval→survey→organize）
-- [x] 版本去重、身份核验、筛选理由和来源完整。（两轮筛选 299 项 + 定向 3 项：252 included / 33 excluded（带理由码）/ 15 uncertain（如实标注缺摘要）；版本去重测试维持通过）
-- [x] 五个 RQ 和主要方法分支的覆盖已检查。（分支×通道：organize 85 / reliability 56 / eval 30 / update 30 / survey 9 / background 1；引文追踪补齐谱系：前向 6 锚点 ×25 被引 + 经典节点 Voyager/RecurrentGPT/RET-LLM/ExpeL/A-MEM/Mem0/HippoRAG/Zep 定向核验命中）
-- [ ] 证据含原文定位、适用条件和局限。（G2 的 30 条达标；批量扩展中）
-- [ ] 真人核验已开始，待办按优先级组织。（核验包生成器就绪 `docs/human_review_queue.md`，批量完成后重新生成全量队列；边界判定已列入复核）
+**策略对齐（D-3，用户九点指令）**：暂停无差别提取；建立 40 篇核心阅读池（七层结构），初筛与最终纳入分离，深读+阅读卡，年份六成复查通过（2026 占 60%，2023–2025 主线 16 篇）。
 
-产物与验证依据（截至本更新）：
-- `runs/scr-081032`、`scr-081357`（两轮筛选）+ 定向筛选运行记录。
-- `docs/decisions.md` D-1（引文追踪路径）、D-2（批量证据提取形态）。
-- `data/abstracts.jsonl`（433 项摘要回填）+ merge_hits 摘要侧车维护。
-- 边界判定待真人复核：Titans（参数化记忆排除）、MemoRAG（单查询记忆排除）、ExpeL（经验记忆纳入）——理由记录在 papers.jsonl reason 字段。
+- [x] 版本去重、身份核验、筛选理由和来源完整。（升级：Zenodo 资源/Underline 载体不计数；W0172/W0380/W0439 合并；同研究版本对标记待归并）
+- [x] 五个 RQ 和主要方法分支的覆盖已检查。（核心池覆盖矩阵：RQ1:10 RQ2:18 RQ3:18 RQ4:10 RQ5:12 篇；可靠性去失衡——非恶意 5 + 攻击 3）
+- [ ] 核心池 40 篇全部完成正文审读与阅读卡（进行中：14 已读 / 26 深读中，5 页/篇覆盖方法与实验）。
+- [ ] 最终确定 35–45 篇（正文审读后淘汰低质量项）。
+- [ ] 真人核验：核验队列按核心池重生成（优先 P0=更新/可靠性层）。
+
+产物与验证依据：
+- `data/core_pool.jsonl` + `data/derived/core_selection.md`（40 篇拟选表：角色/RQ/三问理由/阅读状态）
+- `data/derived/coverage_matrix.md`（层×RQ 覆盖与缺口）
+- `data/derived/downgrade_exclusion.md`（215 项降级辅助 + 排除合并清单）
+- `docs/decisions.md` D-3、`docs/protocol.md` v1.1 修正案
+- 年份再平衡：换入 MIRIX/HaluMem/MemBench/记忆机制综述(143引)，换出 Memory Fabric/IFCMemoryBench/FadeMem/HippoRAG(边界)
+- LoCoMo 修正：W0005（ACL 2024，被引 85）此前因无 arXiv 字段从未被读——已绑定 ACL PDF 入池
 
 ### G4：综合与评估
 
