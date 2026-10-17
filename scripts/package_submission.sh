@@ -24,7 +24,7 @@ find "$SUB/agent_source" -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/nu
 mkdir -p "$SUB/evidence_manifest"
 cp data/core_pool.jsonl data/abstracts.jsonl "$SUB/evidence_manifest/" 2>/dev/null || true
 cp data/derived/{core_selection,coverage_matrix,downgrade_exclusion,reading_cards,research_matrix}.md "$SUB/evidence_manifest/"
-cp data/derived/reading_cards.jsonl data/derived/research_matrix.jsonl "$SUB/evidence_manifest/"
+cp data/derived/reading_cards.jsonl data/derived/research_matrix.jsonl data/derived/claims_map.md "$SUB/evidence_manifest/"
 cp docs/{human_review_queue,final_acceptance,protocol,decisions}.md "$SUB/evidence_manifest/"
 cp PROGRESS.md EXECUTION_PLAN.md "$SUB/evidence_manifest/"
 

@@ -203,3 +203,24 @@ MODEL_BY_FILE = {
     "memory_events.jsonl": MemoryEvent,
     "events.jsonl": RunEvent,
 }
+
+
+def load_valid_evidence(data_dir) -> list:
+    """加载当前有效证据：过滤被 reviews.jsonl 判 fail 的 evidence_id。
+
+    证据文件追加写入不删除；废止通过 Review 记录表达（可追溯）。
+    """
+    ev_path = data_dir / "evidence.jsonl"
+    if not ev_path.exists():
+        return []
+    # 同 evidence_id 多条时取最新（重提取用新 id，正常不重复）
+    latest: dict[str, Evidence] = {}
+    for e in read_jsonl(ev_path, Evidence):
+        latest[e.evidence_id] = e
+    rv_path = data_dir / "reviews.jsonl"
+    invalidated: set[str] = set()
+    if rv_path.exists():
+        for r in read_jsonl(rv_path, Review):
+            if r.result == "fail" and r.target_id.startswith("ev-"):
+                invalidated.add(r.target_id)
+    return [e for eid, e in latest.items() if eid not in invalidated]

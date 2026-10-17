@@ -33,7 +33,7 @@ def main(argv: list[str] | None = None) -> int:
                        help="批处理上限（screen/evidence_batch）")
 
     p_check = sub.add_parser("check", help="检查器")
-    p_check.add_argument("--scope", required=True, choices=["corpus", "manuscript"])
+    p_check.add_argument("--scope", required=True, choices=["corpus", "manuscript", "identity"])
 
     p_bib = sub.add_parser("bibgen", help="从 papers.jsonl 生成 references.bib")
     p_bib.add_argument("--out", default=None, help="输出路径（默认 paper/references.bib）")
@@ -68,6 +68,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "check":
         if args.scope == "corpus":
             return stages.check_corpus(data_dir)
+        if args.scope == "identity":
+            from .identity import check_identity
+            problems = check_identity(data_dir)
+            return 1 if problems else 0
     if args.cmd == "bibgen":
         from .bibgen import generate_bib
         out = Path(args.out) if args.out else ROOT / "paper" / "references.bib"

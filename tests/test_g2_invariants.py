@@ -224,3 +224,44 @@ def test_eval_auto_checks_superseded_use():
     # 精度验证：仅正常提及实体名（无特征区内容）不应命中
     checks2 = _auto_checks(case, "关于多模态记忆的规则见新版本。", set(), [fp])
     assert not checks2["superseded_content_used"], "实体名窗口不得误报"
+
+
+# ------------------------------------------------- 身份核验（D-6 防线）
+
+
+def test_identity_check_rejects_mismatched_pdf():
+    """错配 PDF（记录题名 vs 首页不符）必须被前置校验拒绝。"""
+    from litreview_agent.evidence_batch import _identity_ok
+    # MemoryBank 记录题名 vs 气候论文首页（真实错配案例）
+    climate_first_page = ("We define the Climatological Renewable Energy Deviation Index "
+                          "(credi) for researchers and stakeholders of wind and solar resources.")
+    assert not _identity_ok("MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+                            climate_first_page), "气候论文首页不得通过 MemoryBank 的身份校验"
+    # 正确首页
+    mb_first_page = ("MemoryBank: Enhancing Large Language Models with Long-Term Memory. "
+                     "Wanjun Zhong, Lianghong Guo, Qiqi Gao. An AI companion with forgetting.")
+    assert _identity_ok("MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+                        mb_first_page), "真实 MemoryBank 首页应通过校验"
+
+
+def test_valid_evidence_excludes_invalidated():
+    """废止证据（reviews.jsonl fail）不得出现在有效证据中。"""
+    import tempfile
+    from litreview_agent.models import Evidence, Review, append_jsonl
+    from litreview_agent.models import load_valid_evidence
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td)
+        e_good = Evidence(work_id="W0001", source_id="s", locator="pdf:p1",
+                          excerpt="good", interpretation="i",
+                          evidence_type="mechanism")
+        e_bad = Evidence(work_id="W0002", source_id="s", locator="pdf:p1",
+                         excerpt="bad", interpretation="i",
+                         evidence_type="mechanism")
+        append_jsonl(d / "evidence.jsonl", e_good)
+        append_jsonl(d / "evidence.jsonl", e_bad)
+        append_jsonl(d / "reviews.jsonl",
+                     Review(target_id=e_bad.evidence_id, reviewer_type="auto_check",
+                            reviewer_name="test", result="fail",
+                            correction="废止测试"))
+        valid = load_valid_evidence(d)
+        assert len(valid) == 1 and valid[0].excerpt == "good"

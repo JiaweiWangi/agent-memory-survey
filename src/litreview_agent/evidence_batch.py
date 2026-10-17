@@ -52,11 +52,12 @@ def _evidence_path(data_dir: Path) -> Path:
 
 
 def _existing_evidence(data_dir: Path) -> dict[str, list[Evidence]]:
-    path = _evidence_path(data_dir)
+    """当前有效证据（按 work 分组）；被 reviews.jsonl 判 fail 的不计——
+    废止的工作需要重新提取。"""
+    from .models import load_valid_evidence
     out: dict[str, list[Evidence]] = {}
-    if path.exists():
-        for e in read_jsonl(path, Evidence):  # type: ignore[arg-type]
-            out.setdefault(e.work_id, []).append(e)
+    for e in load_valid_evidence(data_dir):  # type: ignore[attr-defined]
+        out.setdefault(e.work_id, []).append(e)
     return out
 
 
@@ -69,6 +70,24 @@ def _parse_json_array(text: str) -> Optional[list[dict]]:
         return data if isinstance(data, list) else None
     except json.JSONDecodeError:
         return None
+
+
+def _identity_ok(recorded_title: str, first_page_text: str) -> bool:
+    """PDF 首页必须出现记录题名的主要词（忽略大小写/空白/连字符）。
+
+    反例教训：错配的 arXiv ID 会让气候论文的证据进入 MemoryBank 条目
+    （docs/decisions.md D-6）。
+    """
+    import re as _re
+    drop = set("‐‑-­ \t\n\r\f\v")
+    sig = "".join(c for c in (first_page_text or "").lower()
+                  if c not in drop and not c.isspace())
+    # 取题名前 5 个实词（跳过冠词等短词）
+    words = [w for w in _re.split(r"[\s:：,，—-]+", recorded_title) if len(w) > 3][:5]
+    if not words:
+        return True
+    hit = sum(1 for w in words if "".join(w.lower().split()) in sig)
+    return hit >= max(2, len(words) // 2)
 
 
 def run_evidence_batch(data_dir: Path, backend: AnthropicBackend,
@@ -129,6 +148,15 @@ def run_evidence_batch(data_dir: Path, backend: AnthropicBackend,
             log(kind="tool_result", tool="fetch_pdf", status="failed",
                 input_summary=wid, error="正文不可得")
             continue
+        # --- PDF 身份校验（防错配：首页签名必须含记录题名的核心词）---
+        first_page = fetcher.extract_pages(pdf_path, 1, 1)
+        if not _identity_ok(p.title or "", first_page):
+            stats["identity_failed"] = stats.get("identity_failed", 0) + 1
+            log(kind="tool_result", tool="identity_check", status="failed",
+                input_summary=wid,
+                error=f"PDF 首页与记录题名不符：{pdf_path.name}")
+            continue
+
         # --- 页文本 ---
         pages: dict[int, str] = {}
         page_blocks = []

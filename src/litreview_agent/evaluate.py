@@ -213,3 +213,141 @@ def run_evaluation(cases_path: Path, results_path: Path,
             n += 1
     return {"executed": n, "total_expected": len(cases) * len(conditions),
             "results": str(results_path)}
+
+
+# ===================================================== 两阶段 multirun 评估
+
+WRITE_TOOL = {
+    "name": "write_memory",
+    "description": "把信息写入项目记忆（持久化，跨会话保留）",
+    "input_schema": {"type": "object", "properties": {
+        "key": {"type": "string", "description": "记忆条目标识，如 stats-summary"},
+        "content": {"type": "string", "description": "要记住的内容"},
+        "kind": {"type": "string", "description": "task/evidence/decision"}},
+        "required": ["key", "content"]},
+}
+
+MULTIRUN_CASES = {
+    "M4-01": {
+        "phase1": ("运行1（文献综述项目）：当前证据库统计——核心池 40 篇，其中 29 篇已有证据；"
+                   "各 RQ 证据数：RQ3 共 20 条，RQ4 共 15 条，RQ5 共 12 条。"
+                   "请把这份统计摘要存入项目记忆（key=stats-summary），然后简述已存内容。"),
+        "phase2": ("运行2（新会话启动，上一次运行已结束）：报告上次运行存入的统计结果"
+                   "（核心池规模与各 RQ 证据数），并指出证据最少的 RQ 作为下一步处理重点。"),
+        "expect": ["40", "RQ5"],          # 必须含的关键事实
+        "expect_not": [],                  # 不得出现
+    },
+    "M4-02": {
+        "phase1": ("运行1：你刚完成论文 W0002 的证据提取（新增 3 条证据）。"
+                   "请记录任务进度到项目记忆（key=paper-queue）：已完成 W0002，"
+                   "下一个待处理论文是 W0006。"),
+        "phase2": ("运行2（新会话启动）：继续文献处理工作。上一篇处理完的论文是哪篇？"
+                   "接下来应该处理哪篇？"),
+        "expect": ["W0002", "W0006"],
+        "expect_not": [],
+    },
+    "M4-03": {
+        "phase1": ("运行1：登记了两条 claims 到项目记忆（key=claims-eval）："
+                   "claim-1：LoCoMo 是超长期对话记忆基准（ACL 2024）；"
+                   "claim-2：LongMemEval 定义了长期记忆的五能力维度。请存入。"),
+        "phase2": ("运行2（新会话启动）：基于已登记的 claims，写一句评测章节的草稿，"
+                   "须同时涉及两个基准（LoCoMo 与 LongMemEval），并注明所依据的 claim。"),
+        "expect": ["LoCoMo", "LongMemEval"],
+        "expect_not": [],
+    },
+}
+
+
+def run_multirun_eval(results_path: Path, store_dir: Path,
+                      backend: AnthropicBackend) -> dict:
+    """真实两阶段跨运行评估：阶段1写入持久化 → 新实例 → 阶段2恢复。
+
+    - C：阶段1 用 write_memory 工具写入 MemoryStore 文件；阶段2 新开
+      MemoryStore 实例（同一文件=重启后状态），用 recall_memory 检索；
+    - B：阶段2 把阶段1的输出原文注入上下文（上下文注入基线）；
+    - A：阶段2 不提供任何阶段1信息（无记忆基线）。
+    任务完成 = 阶段2输出含全部 expect 关键事实（自动判定）。
+    """
+    import shutil
+
+    results_path.parent.mkdir(parents=True, exist_ok=True)
+    n_done = 0
+    for cid, spec in MULTIRUN_CASES.items():
+        for cond in ("A", "B", "C"):
+            store_file = store_dir / f"{cid}_{cond}.jsonl"
+            if store_file.exists():
+                store_file.unlink()  # 每案例×条件全新状态
+            store_dir.mkdir(parents=True, exist_ok=True)
+            store = MemoryStore(store_dir)
+            store.path = store_file
+
+            # ---- 阶段 1（新运行实例）----
+            if cond == "C":
+                def w_exec(name, inp, st=store):
+                    if name == "write_memory":
+                        st.append(MemoryEvent(
+                            memory_id=inp["key"], action="create",
+                            content=inp["content"],
+                            memory_kind=inp.get("kind", "task")))
+                        return f"已写入 {inp['key']}"
+                    if name == "recall_memory":
+                        return json.dumps(_recall_from_store(st, inp.get("query", "")),
+                                          ensure_ascii=False)
+                    return f"未知工具 {name}"
+                p1_out, _ = backend.tool_loop(
+                    system=EVAL_SYSTEM,
+                    user_message=spec["phase1"] + "（使用 write_memory 工具持久化）",
+                    tools=[WRITE_TOOL, RECALL_TOOL], executor=w_exec, max_steps=4)
+            else:
+                r1 = backend.complete(
+                    system=EVAL_SYSTEM,
+                    messages=[{"role": "user", "content": spec["phase1"]}],
+                    max_tokens=600)
+                p1_out = r1.text
+
+            # ---- 阶段 2（新实例：C 重新打开同一 store 文件 = 重启）----
+            store2 = MemoryStore(store_dir)          # 新实例
+            store2.path = store_file                  # 同一持久化文件
+            p2_msg = spec["phase2"]
+            if cond == "B":
+                p2_msg = ("上次运行的输出记录：\n" + p1_out[:1500]
+                          + "\n\n" + spec["phase2"])
+            if cond == "C":
+                def r_exec(name, inp, st=store2):
+                    if name == "recall_memory":
+                        return json.dumps(_recall_from_store(st, inp.get("query", "")),
+                                          ensure_ascii=False)
+                    return f"未知工具 {name}"
+                p2_out, _ = backend.tool_loop(
+                    system=EVAL_SYSTEM, user_message=p2_msg,
+                    tools=[RECALL_TOOL], executor=r_exec, max_steps=4)
+            else:
+                r2 = backend.complete(
+                    system=EVAL_SYSTEM,
+                    messages=[{"role": "user", "content": p2_msg}],
+                    max_tokens=600)
+                p2_out = r2.text
+
+            # ---- 任务完成判定（关键事实）----
+            missing = [e for e in spec["expect"] if e not in p2_out]
+            bad = [x for x in spec["expect_not"] if x in p2_out]
+            completed = not missing and not bad
+            append_jsonl(results_path, RunEvent(
+                run_id=f"eval-{cid}-{cond}", kind="eval_result",
+                result_summary=json.dumps({
+                    "case_id": cid, "condition": cond, "category": "multirun",
+                    "output": f"[阶段1]\n{p1_out[:400]}\n[阶段2]\n{p2_out[:600]}",
+                    "phase2_output": p2_out[:800],
+                    "auto_checks": {
+                        "task_completed": completed,
+                        "missing_facts": missing or None,
+                        "forbidden_present": bad or None,
+                    },
+                    "usage": {"in": backend.usage.input_tokens,
+                              "out": backend.usage.output_tokens},
+                    "ts": now_iso(), "design": "two_phase_v2"},
+                ensure_ascii=False),
+                status="ok", replay=False))
+            n_done += 1
+            print(f"  {cid}/{cond}: {'完成' if completed else '未完成' + str(missing)}")
+    return {"executed": n_done}
