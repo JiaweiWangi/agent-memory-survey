@@ -13,7 +13,7 @@
 | 执行方案 | 已交付 `EXECUTION_PLAN.md` |
 | 执行交接 | 已交付 `AGENT_HANDOFF.md` |
 | 执行计划 | 已批准（2026-10-17）：API 端点复用、tectonic+poppler、uv 管理、里程碑提交 |
-| 研究执行 | G0 完成；G1 进行中 |
+| 研究执行 | G0/G1/G2 完成；G3 待启动（证据库扩展） |
 | 真人核验 | 未开始 |
 | 实际截止日期 | 未提供，按 10 个工作日相对计划执行 |
 | 成员身份 | 待三名成员补充，当前使用 A/B/C |
@@ -51,16 +51,20 @@
 - `uv run litreview check --scope corpus` 可复核计数与不变量（通过）。
 - 种子论文 6/6 核验：Generative Agents、MemGPT、MemoryBank、Reflexion、LoCoMo（ACL 2024）、LongMemEval（ICLR 2025）。
 
-### G2：最小完整智能体流程
+### G2：最小完整智能体流程 ✅（2026-10-17）
 
-- [ ] 对 3–5 篇真实论文建立可回查证据。
-- [ ] Agent 根据研究缺口选择下一步工具行动。
-- [ ] 生成带有效引用的短草稿。
-- [ ] 缺失证据和冲突不会被自动写成已确认结论。
-- [ ] 重启可恢复状态，记忆更新可追踪。
-- [ ] 形成真实运行日志，模拟和重放有明确标识。
+- [x] 对 3–5 篇真实论文建立可回查证据。（5 篇：MemGPT、LongMemEval、Selective Forgetting、Memory Poisoning Attack and Defense、LTM Security Survey；30 条证据全部带 pdf:pN 定位 + 逐字摘录 + 条件/局限，验证状态 model_assisted）
+- [x] Agent 根据研究缺口选择下一步工具行动。（**真实发生**：模型观察到 RQ1/RQ5 证据缺口后自选 7 个检索词补检，含 "long-term memory versus context window RAG parametric knowledge boundary"——非脚本预设；另诚实报告工具链缺口"无法枚举 evidence_id"并提出 list_evidence 方案，被采纳）
+- [x] 生成带有效引用的短草稿。（`data/derived/draft_g2.md`：9 处 \cite 全部有证据支撑，4 个 work；引用检查通过）
+- [x] 缺失证据和冲突不会被自动写成已确认结论。（**反幻觉验证真实拦截**：excerpt 逐字验证拒绝改写/省略号压缩/凭记忆复述 30+ 次，模型重读原文后修正；草稿中泛化性陈述主动标【待核验】×1）
+- [x] 重启可恢复状态，记忆更新可追踪。（`tests/test_g2_invariants.py::test_restart_preserves_state_no_duplicates` 通过：新协调器实例从磁盘重建状态；memory_events.jsonl 29 条任务记忆事件，supersedes 链保留历史）
+- [x] 形成真实运行日志，模拟和重放有明确标识。（12 个运行目录共 1,586 条事件：工具调用/结果/模型用量/决策理由/错误全记录；无模拟数据，replay=false）
 
-产物与验证依据：待填写。
+产物与验证依据：
+- 代码：`coordinator.py`（协调循环+9 工具）、`model_backends.py`（Anthropic 兼容适配器，凭证仅从 env）、`memory.py`（四类记忆+双状态+supersedes）、`checks.py`（引用检查）、`stages.py`（evidence/draft 阶段）。
+- 数据：`data/evidence.jsonl`（30 条）、`data/claims.jsonl`（7 条，其中 clm-d99029 为模型工具探测产物、后续筛选排除）、`data/memory_events.jsonl`（29 条）、`data/derived/draft_g2.md` + `draft_g2_check.md`。
+- 测试：`uv run pytest` 9/9 通过（版本去重×2、记忆有效性、证据不自动提升、摘录验证接受/拒绝×2、引用检查×2、重启恢复）。
+- 关键工程决策（正文提取）：pdftotext raw 模式替代 -layout（双栏论文按逻辑顺序读取，连续摘录可验证）；摘录验证签名剔除空白与连字符（排版产物），内容字符序列仍逐字严格。
 
 ### G3：完整证据库
 
@@ -124,10 +128,10 @@
 | 原始发现记录 | 616 次命中（66 次检索运行，含 17 次失败记录） | OpenAlex 556 + Crossref 60；全部入档 search_runs.jsonl |
 | 去重学术候选 | 494 | 按独立 work_id；524 条记录含版本关系 |
 | 可获取相关正文 | 16 已验证 + 213 有 arXiv 通道 | 已验证=PDF 下载+提取成功；通道=未逐一验证 |
-| 已阅读相关正文 | 0（G2 开始） | 有证据记录支撑的阅读 |
-| 纳入研究 | 0（筛选在 G2/G3 按证据进行） | 有筛选原因 |
-| 正文实际引用的独立研究 | 未统计 | 最终硬性要求至少 30 |
-| 已有原文支持的核心陈述 | 未统计 | 与全部核心陈述的数量一起报告 |
+| 已阅读相关正文 | 5（30 条证据支撑，G2 完成） | MemGPT / LongMemEval / Selective Forgetting / Memory Poisoning / LTM Security Survey |
+| 纳入研究 | 5（G2 代表作；G3 扩展到 35–45） | 均有已验证证据 |
+| 正文实际引用的独立研究 | 4（G2 短草稿；最终硬性要求 ≥30） | draft_g2.md 引用检查通过 |
+| 已有原文支持的核心陈述 | 6 条 claims（+1 探测产物） | 2 direct + 4 synthesis；全部引用已登记证据 |
 | 已完成人工初核的引用研究 | 未统计 | 最终覆盖全部引用研究 |
 | 关键结论人工复核 | 未统计 | 最终覆盖全部必检项 |
 | 未解决重大问题 | 未统计 | 不能将未审查误记为 0 |
@@ -156,6 +160,6 @@
 
 ## 6. 下一步
 
-G0/G1 已完成。当前批次：G2 最小智能体闭环——模型后端适配器、协调循环、3–5 篇代表论文全流程（检索→正文→证据→claims→带引用短草稿）、缺口驱动补检与诚实性两次决策演示、重启恢复测试。arXiv API 封锁解除后补预印本定向检索。
+G0/G1/G2 已完成（批次 1–3：协议环境 → 文献可行性 → 最小智能体闭环）。下一批次：G3 证据库扩展——OpenAlex 引文前后向追踪、更新/可靠性/评测三分支补检、筛选记录与研究矩阵、目标 35–45 项纳入。arXiv API 封锁解除后补预印本定向检索。人工核验包从 G3 开始准备。
 
-最终状态：**G0/G1 完成；G2 进行中。**
+最终状态：**批次 1–3 完成；G3 待启动。**

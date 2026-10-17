@@ -57,15 +57,19 @@ class Fetcher:
                         sha256=_sha256(pdf_path), pages=_pdf_pages(pdf_path))
 
     def extract_pages(self, pdf_path: Path, first: int, last: int) -> str:
-        """pdftotext -layout 页级提取（first/last 均 1-based）。"""
+        """pdftotext 页级提取（first/last 均 1-based）。
+
+        用 raw 模式（无 -layout）：按文本流逻辑顺序输出，双栏论文逐栏读取，
+        连续摘录可验证；-layout 模式按视觉布局交错两栏，引用拼接会失败。
+        """
         out = subprocess.run(
-            ["pdftotext", "-layout", "-f", str(first), "-l", str(last),
+            ["pdftotext", "-f", str(first), "-l", str(last),
              str(pdf_path), "-"],
             capture_output=True, text=True, timeout=60)
         return out.stdout if out.returncode == 0 else ""
 
     def full_text(self, pdf_path: Path) -> str:
-        out = subprocess.run(["pdftotext", "-layout", str(pdf_path), "-"],
+        out = subprocess.run(["pdftotext", str(pdf_path), "-"],
                              capture_output=True, text=True, timeout=120)
         return out.stdout if out.returncode == 0 else ""
 
