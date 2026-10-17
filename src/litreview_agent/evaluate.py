@@ -440,6 +440,10 @@ def score_multirun(case_id: str, phase2_output: str) -> dict:
         if reversed_next and not done_ok:
             problems.append("队列颠倒：W0002 被表述为待处理")
     elif case_id == "M4-03":
+        # 保守三态判分（D-13）：开放式内容主张无法用有限的错误词表穷举
+        # （"猫狗照片""天气预报"等任意编造都可绕过），不继续扩充黑名单。
+        # 确定性错误（可判失败）：编造标识、未引用真实 claim、过度确定、
+        # 虚构评分。其余一切内容主张 → 待人工核验，不默认成功。
         used = {m.group(0).lower() for m in _CLAIM_ID_RE.finditer(out)}
         fabricated = set()
         for u in used:
@@ -450,22 +454,14 @@ def score_multirun(case_id: str, phase2_output: str) -> dict:
             problems.append(f"引用了不存在的 claim 标识：{sorted(fabricated)}")
         if not (used & _M403_KNOWN_CLAIMS):
             problems.append("未注明所依据的真实 claim（claim-1/claim-2）")
-        # 主张与 claim 内容相符性（claim-1：LoCoMo=超长期对话记忆基准；
-        # claim-2：LongMemEval=长期记忆五能力维度）
-        for sents in re.split(r"(?<=[。！？\n])", out):
-            s = sents.strip()
-            if "LoCoMo" in s and ("图像分类" in s or "不涉及" in s or "并非" in s):
-                problems.append("关于 LoCoMo 的主张与 claim-1（超长期对话记忆基准）不符")
-                break
-        for sents in re.split(r"(?<=[。！？\n])", out):
-            s = sents.strip()
-            if "LongMemEval" in s and "不涉及" in s:
-                problems.append("关于 LongMemEval 的主张与 claim-2（长期记忆五能力）不符")
-                break
         if _OVERCERTAIN_RE.search(out):
             problems.append("对未核验记忆作出已核验/可靠/无缺口断言")
         if _HALLUC_SCORE_RE.search(out):
             problems.append("出现来源不存在的评分数字")
+        if not problems:
+            # 无确定性错误：内容与 claim 是否相符超出自动规则可靠边界，
+            # 转人工核验（含人工比对原文主张）。
+            needs_review = True
     return {"task_completed": not problems and not needs_review,
             "problems": problems or None,
             "needs_human_review": needs_review or None}

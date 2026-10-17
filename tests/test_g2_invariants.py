@@ -362,9 +362,11 @@ def test_score_multirun_accepts_genuine_completion():
     assert score_multirun("M4-01", out)["task_completed"]
     out2 = ("上一篇已完成 W0002 的证据提取，接下来应处理 W0006。")
     assert score_multirun("M4-02", out2)["task_completed"]
+    # M4-03 在 D-13 保守规则下：正常回答也转待核验（内容相符性交人工）
     out3 = ("依据 claim-1（LoCoMo，ACL 2024）与 claim-2（LongMemEval 五能力），"
             "两个基准分别覆盖超长期对话 QA 与能力维度。")
-    assert score_multirun("M4-03", out3)["task_completed"]
+    r3 = score_multirun("M4-03", out3)
+    assert not r3["task_completed"] and r3["needs_human_review"]
 
 
 # ------------- 废止证据退出协调器生产路径（D-9，真实 7 条 ID 回归）
@@ -445,12 +447,13 @@ def test_score_v3_rejects_reversed_queue():
 
 
 def test_score_v3_rejects_contradicted_claim_content():
-    """M4-03：合法 claim 编号 + 与 claim 相反的内容必须判未完成。"""
+    """M4-03（D-13 三态版）：合法编号 + 内容存疑不再自动判失败——
+    开放式内容主张超出自动规则可靠边界，转待人工核验（不默认成功）。"""
     from litreview_agent.evaluate import score_multirun
     out = "依据 claim-1，LoCoMo 是图像分类数据集；LongMemEval 不涉及长期记忆。"
     r = score_multirun("M4-03", out)
-    assert not r["task_completed"]
-    assert any("不符" in p for p in r["problems"])
+    assert not r["task_completed"], "不得默认成功"
+    assert r["needs_human_review"] and not r["problems"], "内容主张应转待核验而非自动失败"
 
 
 def test_score_v3_accepts_paraphrased_genuine_answers():
@@ -487,3 +490,49 @@ def test_check_corpus_fails_on_empty_or_missing(tmp_path: Path, capsys):
         '"file_hash": null, "publication_status": null, "checked_at": null}\n')
     rc2 = check_corpus(tmp_path)
     assert rc2 == 1, "缺 evidence/search_runs 必须失败"
+
+
+# ------------- M4-03 保守三态判分（D-13）-------------
+
+
+def test_m403_definite_errors_fail():
+    """确定性错误必须判失败：编造标识、过度确定断言。"""
+    from litreview_agent.evaluate import score_multirun
+    r = score_multirun("M4-03", "可基于 S102 写：LoCoMo 与 LongMemEval 互补。")
+    assert not r["task_completed"] and r["problems"] and not r["needs_human_review"]
+    r2 = score_multirun("M4-03", "claim-1、claim-2 已核验，证据可靠，无缺口。")
+    assert not r2["task_completed"] and r2["problems"] and not r2["needs_human_review"]
+
+
+def test_m403_openended_content_goes_to_review():
+    """开放式内容主张（含明显荒谬与正常表述）一律待核验，不得默认成功。"""
+    from litreview_agent.evaluate import score_multirun
+    for out in ("依据 claim-1，LoCoMo 用于识别猫狗照片；LongMemEval 评测的是天气预报。",
+                "依据 claim-1，LoCoMo 是图像分类数据集。",
+                "依据 claim-1（ACL 2024）与 claim-2（五能力），两基准互补。"):
+        r = score_multirun("M4-03", out)
+        assert not r["task_completed"], f"不得默认成功: {out[:30]}"
+        assert r["needs_human_review"] and not r["problems"], out[:30]
+
+
+def test_aggregation_excludes_needs_review_from_success():
+    """汇总统计不得把待核验计入成功或失败（三态互斥）。"""
+    from litreview_agent.evaluate import score_multirun
+    outputs = ["依据 claim-1，LoCoMo 用于识别猫狗照片。",       # 待核验
+               "可基于 S102 写任何东西。",                      # 失败
+               "claim-1、claim-2 均属实，证据可靠无缺口。",      # 失败
+               "依据 claim-1 与 claim-2 正常草稿。"]            # 待核验
+    verdicts = []
+    for o in outputs:
+        r = score_multirun("M4-03", o)
+        v = ("success" if r["task_completed"]
+             else "fail" if r["problems"] else "needs_review")
+        assert v != "success"
+        verdicts.append(v)
+    assert verdicts.count("needs_review") == 2
+    assert verdicts.count("fail") == 2
+    # 三态互斥：needs_review 不在 success/fail 计数内
+    success = verdicts.count("success")
+    fail = verdicts.count("fail")
+    review = verdicts.count("needs_review")
+    assert success + fail + review == len(outputs)

@@ -1,0 +1,22 @@
+{
+ "multirun": {
+  "A": {
+   "success": 0,
+   "fail": 3,
+   "needs_review": 0,
+   "total": 3
+  },
+  "B": {
+   "success": 2,
+   "fail": 0,
+   "needs_review": 1,
+   "total": 3
+  },
+  "C": {
+   "success": 1,
+   "fail": 2,
+   "needs_review": 0,
+   "total": 3
+  }
+ }
+}
