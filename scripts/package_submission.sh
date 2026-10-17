@@ -34,14 +34,35 @@ cp PROGRESS.md EXECUTION_PLAN.md "$SUB/evidence_manifest/"
 # 5) 复现说明
 cat > "$SUB/README.md" <<'README'
 # 提交包说明
-- review.pdf / agent_report.pdf / presentation.pdf：三份交付 PDF
+
+## 内容
+- review.pdf / agent_report.pdf / presentation.pdf：三份交付 PDF（与 latex_source 一致）
 - latex_source/：三个 LaTeX 工程源文件（tectonic 编译）
-- agent_source/：智能体源码（uv 管理）、测试（12 项）、评估案例与结果
+- agent_source/：智能体源码（uv 管理）、测试（28 项）、评估案例与结果
 - evidence_manifest/：证据链主数据（papers/evidence/claims/reviews/search_runs/
-  memory_events 六个 JSONL，含 7 条错配废止记录）、核心池清单、39 张阅读卡、
-  研究矩阵、论断映射表、核验队列、验收报告
-- 复现：cd agent_source && uv sync && uv run pytest && uv run litreview check --scope corpus
-- 模型凭证走环境变量（.env.example 列出变量名）；论文原档与缓存不入包，清单含定位可溯源
+  memory_events 六个 JSONL，含 7 条错配废止记录——原始记录保留、生产路径排除）、
+  核心池清单、39 张阅读卡、研究矩阵、论断映射表、核验队列、验收报告
+
+## 离线复查（无需模型调用）
+cd agent_source
+uv sync                                                    # 恢复依赖
+uv run pytest                                              # 28 项测试
+uv run litreview --data-dir ../evidence_manifest check --scope corpus
+# 期望输出：papers.jsonl 726 条当前记录（原始 1079 行）/ 有效证据 342（废止 7 条保留可追溯）/
+#          检索运行 104 次；必需文件缺失或语料为空时该命令返回失败
+
+## 在线复现（需要模型凭证）
+export ANTHROPIC_BASE_URL=... ANTHROPIC_AUTH_TOKEN=... ANTHROPIC_DEFAULT_HAIKU_MODEL=...
+uv run litreview evaluate                                  # 标准评估入口
+# （评估会产生新的模型调用与费用；已有结果在 agent_source/evaluation/）
+
+## LaTeX 重建
+cd ../latex_source/paper && tectonic main.tex              # 综述（21 页）
+cd ../agent_report && tectonic main.tex                    # 智能体说明
+cd ../slides && tectonic main.tex                          # 幻灯片
+
+模型凭证走环境变量（.env.example 列出变量名）；论文原档（sources/）与 HTTP
+缓存不入包，证据清单含定位可溯源。
 README
 
 echo "提交包构建完成："

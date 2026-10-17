@@ -1,25 +1,21 @@
-% 自动生成 v3：谱系图改为关系表（重叠不可读问题的一揽子解决）
+% 自动生成 v4：逐边证据核查后（D-10）；'以该基准评测'仅在有使用证据时标注
 \begin{table}[t]
 \centering\small
-\caption{研究谱系中的明确继承与使用关系（依据=阅读卡证据中明确提及；仅“提到某论文”不视为继承，无证据依据的依赖不列入）}\label{tab:genealogy}
-\begin{tabular}{p{2.6cm}p{2.6cm}p{3.2cm}p{5.2cm}}
+\caption{研究谱系中的明确关系（逐边核查证据后裁定；仅``提到某论文''或论文名称相近不构成关系，无证据的边已删除）}\label{tab:genealogy}
+\begin{tabular}{p{2.8cm}p{2.8cm}p{2.2cm}p{5.6cm}}
 \toprule
-后续工作 & 涉及对象 & 关系性质 & 依据（阅读卡中的明确表述） \\
+后续工作 & 涉及对象 & 关系性质 & 证据（原文定位） \\
 \midrule
-AMem（2025） & Mem0（2025） & 沿用/讨论其机制 & AMem 阅读卡明确提及 Mem0 \\
-AMem（2025） & LoCoMo（2024） & 以该基准评测 & AMem 阅读卡明确提及 LoCoMo \\
-Mem0（2025） & LoCoMo（2024） & 以该基准评测 & Mem0 阅读卡明确提及 LoCoMo \\
-Zep（2025） & MemGPT（2023） & 沿用/讨论其机制 & Zep 阅读卡明确提及 MemGPT \\
-Zep（2025） & LongMemEval（2024） & 以该基准评测 & Zep 阅读卡明确提及 LongMemEval \\
-LongMemEval（2024） & MemoryBank（2024） & 沿用/讨论其机制 & LongMemEval 阅读卡明确提及 MemoryBank \\
-LongMemEval（2024） & LoCoMo（2024） & 以该基准评测 & LongMemEval 阅读卡明确提及 LoCoMo \\
-SelectiveForgetting（2026） & GenAgents（2023） & 沿用/讨论其机制 & 阅读卡 relations 明确提及 \\
-SelectiveForgetting（2026） & LongMemEval（2024） & 以该基准评测 & 阅读卡 relations 明确提及 \\
-Reconsolidation（2026） & LongMemEval（2024） & 以该基准评测 & 阅读卡 relations 明确提及 \\
-Canonicalization（2026） & LongMemEval（2024） & 以该基准评测 & 阅读卡 relations 明确提及 \\
-HaluMem（2025） & LongMemEval（2024） & 以该基准评测 & 阅读卡 relations 明确提及 \\
+AMem & LoCoMo & 以该基准评测 & 证据：'we utilize the LoCoMo data'（pdf:p5 §4.1） \\
+Mem0 & LoCoMo & 以该基准评测 & 证据：LOCOMO 上 LLM-as-a-Judge 相对 OpenAI +26\%（pdf:p1 Abstract） \\
+Zep & MemGPT & 以其提出的基准评测并比较 & 证据：'DMR benchmark, which the MemGPT team established'，Zep 94.8\% vs 93.4\%（pdf:p1 Abstract） \\
+Zep & LongMemEval & 以该基准评测 & 证据：'validated through the more challenging LongMemEval benchmark'（pdf:p1 Abstract） \\
+LongMemEval & MemoryBank & 比较／讨论 & 证据：Table 1 指出含 MemoryBank 的既有 QA 基准缺失跨会话综合/更新推理等能力（pdf:p3）——非使用其评测 \\
+LongMemEval & LoCoMo & 比较／讨论 & 证据：'LoCoMo…also fail to evaluate recall of assistant-provided information'（pdf:p2 §2）——非使用其评测 \\
+SelectiveForgetting & GenAgents & 沿用其设计 & 证据：以记忆流构建持久图，引 Park et al. 2023（pdf:p1/p2） \\
+SelectiveForgetting & LongMemEval & 以该基准评测 & 证据：'On LongMemEval, the graph does not out-perform…'（pdf:p1 Abstract） \\
+Reconsolidation & LongMemEval & 以该基准评测 & 证据：'achieves…65.11\% on LongMemEval'（pdf:p1 Abstract） \\
+HaluMem & LongMemEval & 比较／讨论 & 证据：总结 LongMemEval 等为端到端黑盒评测、无法归因操作级幻觉（pdf:p5 §2.2）——非使用其评测 \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-% 补充：全池 40 项按层与年份的分布见 methods_table（表~\ref{tab:methods}）；谱系叙事见正文 3.1--3.3 节文字梳理。

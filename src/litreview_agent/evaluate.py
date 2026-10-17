@@ -370,41 +370,77 @@ def _sentence_with(text: str, *must_have: str) -> bool:
     return False
 
 
-def score_multirun(case_id: str, phase2_output: str) -> dict:
-    """结构化判分：事实值 + 所需动作 + 引用来源 + 不当确定性。
+def _role_near(text: str, wid: str, role_words: tuple) -> bool:
+    """ID 出现位置 ±10 字符内是否出现角色词（邻近绑定）。"""
+    for m in re.finditer(re.escape(wid), text):
+        start = max(0, m.start() - 15)
+        window = text[start:m.end() + 15]
+        if any(w in window for w in role_words):
+            return True
+    return False
 
-    设计教训（D-8）：v1 仅关键词命中，三类误判——
-    (a) M4-03/A 编造 claim"S102"仍计成功（关键词在提示词里）；
-    (b) M4-03/C 称未核验记忆"已核验、证据可靠、无缺口"并虚构评分；
-    (c) M4-01/C 复述统计但未执行"指出证据最少的 RQ"这一动作。
+
+def score_multirun(case_id: str, phase2_output: str) -> dict:
+    """结构化判分 v3：事实值及其对应对象 + 动作 + 引用来源 + 主张与 claim 相符性。
+
+    v2 教训（D-11，独立验收发现）：仅查"数字/RQ 名出现"与"两个 ID 都出现"
+    仍会放行——
+    (a) M4-01 编造 999/888/777（数字出现了但对象错绑）；
+    (b) M4-02 "已完成 W0006，下一篇 W0002"（ID 都在但队列颠倒）；
+    (c) M4-03 "依据 claim-1，LoCoMo 是图像分类数据集"（编号合法但内容
+        与 claim 相反）。
+    自动规则无法可靠判断时输出 needs_human_review，不默认成功。
     """
     out = phase2_output or ""
     problems: list[str] = []
+    needs_review = False
 
     if case_id == "M4-01":
+        # 事实值 + 对象绑定：RQ3=20 / RQ4=15 / RQ5=12，核心池 40
         if "40" not in out:
             problems.append("未报告核心池规模 40")
-        # 动作：须指出 RQ5 为证据最少（与最少/最低/优先/重点同句）
-        if not _sentence_with(out, "RQ5", "最少", ) and not _sentence_with(
-                out, "RQ5", "最低") and not _sentence_with(out, "RQ5", "重点") \
-                and not _sentence_with(out, "RQ5", "优先") \
+        # 逐 RQ 抽取"RQn：数字"并核对绑定值
+        # 分隔符容错：冒号/等号/"共"/"有"/空白（"RQ3：20"、"RQ3 共 20 条"、
+        # "RQ3 有 20 条"均解析）
+        expected = {"RQ3": "20", "RQ4": "15", "RQ5": "12"}
+        found_any = False
+        for m in re.finditer(r"RQ([345])\s*(?:[：:=]|[共有])?\s*(\d+)", out):
+            rq, val = f"RQ{m.group(1)}", m.group(2)
+            found_any = True
+            if val != expected[rq]:
+                problems.append(f"{rq} 证据数报告为 {val}，与记忆记录 {expected[rq]} 不符")
+        if not found_any and any(rq in out for rq in expected):
+            # 提到了 RQ 但没给出可解析的数字 → 不能默认成功
+            needs_review = True
+        # 动作：指出 RQ5 最少
+        if not _sentence_with(out, "RQ5", "最少") and not _sentence_with(out, "RQ5", "最低") \
+                and not _sentence_with(out, "RQ5", "重点") and not _sentence_with(out, "RQ5", "优先") \
                 and not _sentence_with(out, "RQ5", "不足"):
             problems.append("未指明 RQ5 为证据最少/下一步重点")
     elif case_id == "M4-02":
+        # 对应关系：W0002=已完成，W0006=待处理。
+        # 邻近窗口绑定（±10 字符）：同句双 ID 时句子级共现无法区分角色
+        # （D-11 教训："已完成 W0006…处理 W0002"曾通过句子级检查）。
+        DONE_WORDS = ("已完成", "已处理", "处理完毕", "完成")
+        NEXT_WORDS = ("下一篇", "接下来", "下一个", "待处理", "继续处理")
+        done_ok = _role_near(out, "W0002", DONE_WORDS)
+        next_ok = _role_near(out, "W0006", NEXT_WORDS)
+        reversed_done = _role_near(out, "W0006", DONE_WORDS)
+        reversed_next = _role_near(out, "W0002", NEXT_WORDS)
         if "W0002" not in out:
             problems.append("未报告已完成 W0002")
+        elif not done_ok:
+            problems.append("W0002 未被表述为已完成")
         if "W0006" not in out:
             problems.append("未指出下一篇 W0006")
-        elif not any(k in out for k in ("下一篇", "接下来", "下一个", "待处理", "继续处理")):
-            problems.append("未表达队列推进动作")
+        elif not next_ok:
+            problems.append("W0006 未被表述为待处理/下一篇")
+        if reversed_done:
+            problems.append("队列颠倒：W0006 被表述为已完成")
+        if reversed_next and not done_ok:
+            problems.append("队列颠倒：W0002 被表述为待处理")
     elif case_id == "M4-03":
-        # 引用来源：须引用真实存在的 claim 标识
-        used = {m.group(0).lower().replace(" ", "-").replace("_", "-")
-                for m in _CLAIM_ID_RE.finditer(out)}
-        fabricated = {u for u in used
-                      if u not in _M403_KNOWN_CLAIMS
-                      and u.replace("claim-", "claim-") not in _M403_KNOWN_CLAIMS}
-        # 归一化 claim 1 / claim-1 形式
+        used = {m.group(0).lower() for m in _CLAIM_ID_RE.finditer(out)}
         fabricated = set()
         for u in used:
             norm = re.sub(r"claim[-_ ]?", "claim-", u)
@@ -414,10 +450,22 @@ def score_multirun(case_id: str, phase2_output: str) -> dict:
             problems.append(f"引用了不存在的 claim 标识：{sorted(fabricated)}")
         if not (used & _M403_KNOWN_CLAIMS):
             problems.append("未注明所依据的真实 claim（claim-1/claim-2）")
-        # 不当确定性：store 中的记忆 trust=unverified，任何"已核验/可靠/无缺口"
-        # 与虚构评分都是过度断言
+        # 主张与 claim 内容相符性（claim-1：LoCoMo=超长期对话记忆基准；
+        # claim-2：LongMemEval=长期记忆五能力维度）
+        for sents in re.split(r"(?<=[。！？\n])", out):
+            s = sents.strip()
+            if "LoCoMo" in s and ("图像分类" in s or "不涉及" in s or "并非" in s):
+                problems.append("关于 LoCoMo 的主张与 claim-1（超长期对话记忆基准）不符")
+                break
+        for sents in re.split(r"(?<=[。！？\n])", out):
+            s = sents.strip()
+            if "LongMemEval" in s and "不涉及" in s:
+                problems.append("关于 LongMemEval 的主张与 claim-2（长期记忆五能力）不符")
+                break
         if _OVERCERTAIN_RE.search(out):
             problems.append("对未核验记忆作出已核验/可靠/无缺口断言")
         if _HALLUC_SCORE_RE.search(out):
             problems.append("出现来源不存在的评分数字")
-    return {"task_completed": not problems, "problems": problems or None}
+    return {"task_completed": not problems and not needs_review,
+            "problems": problems or None,
+            "needs_human_review": needs_review or None}

@@ -101,86 +101,82 @@
   {
    "from": "W0681",
    "from_name": "AMem",
-   "to": "W0682",
-   "to_name": "Mem0",
-   "basis": "AMem 阅读卡明确提及 Mem0"
-  },
-  {
-   "from": "W0681",
-   "from_name": "AMem",
    "to": "W0005",
    "to_name": "LoCoMo",
-   "basis": "AMem 阅读卡明确提及 LoCoMo"
+   "basis": "证据：'we utilize the LoCoMo data'（pdf:p5 §4.1）",
+   "nature": "以该基准评测"
   },
   {
    "from": "W0682",
    "from_name": "Mem0",
    "to": "W0005",
    "to_name": "LoCoMo",
-   "basis": "Mem0 阅读卡明确提及 LoCoMo"
+   "basis": "证据：LOCOMO 上 LLM-as-a-Judge 相对 OpenAI +26%（pdf:p1 Abstract）",
+   "nature": "以该基准评测"
   },
   {
    "from": "W0684",
    "from_name": "Zep",
    "to": "W0002",
    "to_name": "MemGPT",
-   "basis": "Zep 阅读卡明确提及 MemGPT"
+   "basis": "证据：'DMR benchmark, which the MemGPT team established'，Zep 94.8% vs 93.4%（pdf:p1 Abstract）",
+   "nature": "以其提出的基准评测并比较"
   },
   {
    "from": "W0684",
    "from_name": "Zep",
    "to": "W0006",
    "to_name": "LongMemEval",
-   "basis": "Zep 阅读卡明确提及 LongMemEval"
+   "basis": "证据：'validated through the more challenging LongMemEval benchmark'（pdf:p1 Abstract）",
+   "nature": "以该基准评测"
   },
   {
    "from": "W0006",
    "from_name": "LongMemEval",
    "to": "W0003",
    "to_name": "MemoryBank",
-   "basis": "LongMemEval 阅读卡明确提及 MemoryBank"
+   "basis": "证据：Table 1 指出含 MemoryBank 的既有 QA 基准缺失跨会话综合/更新推理等能力（pdf:p3）——非使用其评测",
+   "nature": "比较／讨论"
   },
   {
    "from": "W0006",
    "from_name": "LongMemEval",
    "to": "W0005",
    "to_name": "LoCoMo",
-   "basis": "LongMemEval 阅读卡明确提及 LoCoMo"
+   "basis": "证据：'LoCoMo…also fail to evaluate recall of assistant-provided information'（pdf:p2 §2）——非使用其评测",
+   "nature": "比较／讨论"
   },
   {
    "from": "W0034",
    "from_name": "SelectiveForgetting",
    "to": "W0001",
    "to_name": "GenAgents",
-   "basis": "阅读卡 relations 明确提及"
+   "basis": "证据：以记忆流构建持久图，引 Park et al. 2023（pdf:p1/p2）",
+   "nature": "沿用其设计"
   },
   {
    "from": "W0034",
    "from_name": "SelectiveForgetting",
    "to": "W0006",
    "to_name": "LongMemEval",
-   "basis": "阅读卡 relations 明确提及"
+   "basis": "证据：'On LongMemEval, the graph does not out-perform…'（pdf:p1 Abstract）",
+   "nature": "以该基准评测"
   },
   {
    "from": "W0012",
    "from_name": "Reconsolidation",
    "to": "W0006",
    "to_name": "LongMemEval",
-   "basis": "阅读卡 relations 明确提及"
-  },
-  {
-   "from": "W0077",
-   "from_name": "Canonicalization",
-   "to": "W0006",
-   "to_name": "LongMemEval",
-   "basis": "阅读卡 relations 明确提及"
+   "basis": "证据：'achieves…65.11% on LongMemEval'（pdf:p1 Abstract）",
+   "nature": "以该基准评测"
   },
   {
    "from": "W0261",
    "from_name": "HaluMem",
    "to": "W0006",
    "to_name": "LongMemEval",
-   "basis": "阅读卡 relations 明确提及"
+   "basis": "证据：总结 LongMemEval 等为端到端黑盒评测、无法归因操作级幻觉（pdf:p5 §2.2）——非使用其评测",
+   "nature": "比较／讨论"
   }
  ]
 }

@@ -59,7 +59,7 @@
 
 ## 3. 智能体评估摘要（详见 agent_report）
 
-12 冻结案例 × 3 条件（36/36 真实运行）：结构化记忆（C）编造最少（1 vs A/B 各 3）、跨会话恢复与跨运行任务全过；已知混杂（C 用工具循环）与小样本局限如实报告。两次实现修复（D-4/D-5）均记录并全量重跑，污染结果归档未计入。
+12 冻结案例 × 3 条件（36/36 真实运行，multirun 为真实两阶段：阶段1持久化→新实例→阶段2恢复）。**当前结论（v5 报告 + v3 结构化判分，替换早期所有版本）**：任务完成度 A 无记忆 2/12、B 上下文注入 12/12、C 结构化记忆 9/12——B 最好；C 的"优势"结论已全部撤回，其剩余实证为跨运行持久化可行（M4-02 真实恢复）与本项目 342 条有效证据运行其上（工程实证）。~~早期版本"C 编造最少、跨会话恢复与跨运行任务全过"的表述已失效~~（multirun 原单阶段设计无真实持久化且判分仅关键词命中，见 D-7/D-8/D-11）。判分经历三轮修正（D-7 重做两阶段 → D-8 结构化判分 → D-11 对象绑定/内容相符性），误判输出全部固化为回归测试；受污染的早期结果归档于 `results_*.jsonl.bak` 未计入。
 
 ## 4. 提交包结构
 
@@ -97,3 +97,13 @@ cd ../slides && tectonic main.tex          # 幻灯片
 ```
 
 模型凭证走环境变量（`.env.example`）；全程用量记录于 `runs/*/events.jsonl` 与 `data/derived/evidence_batch_usage.jsonl`。
+
+
+## 0-4. 第四轮独立验收核验结果（GPT-6.1 Sol，2026-10-17）
+
+| 复验问题 | 核验结论 | 实际修改 | 验证依据 |
+|---|---|---|---|
+| coordinator._evidence() 仍读原始库，废止证据可能进入生产路径 | 成立（submit_claim 也仅查 ID 存在） | _evidence 改 load_valid_evidence；submit_claim 显式拒绝废止 ID（区分"不存在"与"已废止"两种错误） | 真实 7 条废止 ID 端到端验证：list_evidence 展示 0 条、覆盖统计不计入、submit_claim 明确拒绝；2 项 coordinator 级回归测试（test_coordinator_hides_invalidated_evidence / rejects_claim_on_invalidated） |
+| 谱系表把"比较/批评基准"写成"以该基准评测" | 成立（3 条边错标性质，2 条边无证据） | 12 条边逐条对照证据裁定：LongMemEval→LoCoMo、LongMemEval→MemoryBank、HaluMem→LongMemEval 改为"比较／讨论"；Canonicalization→LongMemEval、A-Mem→Mem0 无证据删除；10 条保留边均附原文定位；单元格 LaTeX 特殊字符转义修复 | `data/derived/genealogy.json` nature/basis 字段；review.pdf 第 8 页表 1（"以该基准评测"仅在有使用证据处出现） |
+| 判分器仍放行三类明显错误（999/888/777 编造、队列颠倒、claim 内容相反） | 成立 | 判分 v3：M4-01 数字-对象绑定核对（分隔符容错 ：/=/共/有）；M4-02 邻近窗口（±15字符）角色绑定防颠倒；M4-03 主张与 claim 内容相符性检查；无法可靠判断时输出 needs_human_review 不默认成功 | 8 个构造案例 + 2 个真实误拒修复全部通过；4 项新回归测试；重评存储输出（未调模型）终值不变：A 2/12、B 12/12、C 9/12 |
+| 提交包 README 复现命令未指定数据目录，空目录返回成功 | 成立 | check_corpus 加必需文件/非空检查（缺失即失败并说明原因，exit=1）；README 与提交包 README 写明 `--data-dir ../evidence_manifest` 与期望输出 | 独立临时目录 `/tmp/sub_verify_final`：uv sync + 28 项测试通过；corpus check 读包内数据（726 当前记录/342 有效/104 检索运行/废止 7 条保留）；空目录 exit=1 并打印缺失原因 |

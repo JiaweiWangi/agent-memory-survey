@@ -518,26 +518,51 @@ eval_target（无/召回精度/更新正确性/长期任务成功率/成本/攻�
 
 
 def check_corpus(data_dir: Path) -> int:
-    """语料检查：计数与去重不变量。"""
-    from .models import Evidence, SearchRun, read_jsonl
+    """语料检查：必需文件、非空语料与去重不变量。
+
+    D-12：必需文件缺失或语料为空必须返回失败并说明原因——此前空目录
+    会打印 0 计数却返回成功，掩盖数据目录错误。
+    """
+    from .models import Evidence, SearchRun, load_valid_evidence, read_jsonl
+
+    REQUIRED = ["papers.jsonl", "evidence.jsonl", "search_runs.jsonl"]
+    ok = True
+    for name in REQUIRED:
+        if not (data_dir / name).exists():
+            print(f"  [FAIL] 必需文件缺失：{data_dir / name}")
+            ok = False
+    if not ok:
+        print("  语料检查失败：数据目录不完整（检查 --data-dir 是否指向"
+              "含 JSONL 主数据 的目录，如提交包的 evidence_manifest/）。")
+        return 1
 
     papers = load_papers(data_dir)
     works = distinct_works(papers)
     included = {wid: recs for wid, recs in works.items()
                 if any(r.inclusion_status == "included" for r in recs)}
     ev_path = data_dir / "evidence.jsonl"
-    evidence = list(read_jsonl(ev_path, Evidence)) if ev_path.exists() else []
+    evidence = list(read_jsonl(ev_path, Evidence))
+    valid_evidence = load_valid_evidence(data_dir)
+    invalidated = len(evidence) - len(valid_evidence)
     sr_path = data_dir / "search_runs.jsonl"
-    runs = list(read_jsonl(sr_path, SearchRun)) if sr_path.exists() else []
+    runs = list(read_jsonl(sr_path, SearchRun))
+
+    if not papers:
+        print("  [FAIL] papers.jsonl 为空")
+        ok = False
+    if not valid_evidence:
+        print("  [FAIL] 有效证据为 0（全部记录被废止或库为空）")
+        ok = False
 
     print("== 语料检查 ==")
+    print(f"  数据目录: {data_dir}")
     print(f"  papers.jsonl 记录: {len(papers)}")
     print(f"  独立 work_id: {len(works)}")
     print(f"  inclusion_status=included 的研究: {len(included)}")
-    print(f"  证据记录: {len(evidence)}")
+    print(f"  证据记录: {len(evidence)}（有效 {len(valid_evidence)}，"
+          f"废止 {invalidated} 条保留可追溯）")
     print(f"  检索运行记录: {len(runs)}"
           f"（failed: {sum(1 for r in runs if r.status == 'failed')}）")
-    ok = True
     # 不变量：同一 work_id 的记录不得互相冲突地标记 included/excluded
     for wid, recs in works.items():
         statuses = {r.inclusion_status for r in recs}

@@ -171,8 +171,10 @@ class Coordinator:
         return distinct_works(self._papers())
 
     def _evidence(self) -> list[Evidence]:
-        path = self.data_dir / "evidence.jsonl"
-        return list(read_jsonl(path, Evidence)) if path.exists() else []  # type: ignore[arg-type]
+        """当前有效证据（废止感知，D-6/D-9）：reviews.jsonl 判 fail 的
+        evidence_id 不进入生产路径；原始记录保留在文件中供审计。"""
+        from .models import load_valid_evidence
+        return load_valid_evidence(self.data_dir)  # type: ignore[return-value]
 
     def _claims(self) -> list[Claim]:
         path = self.data_dir / "claims.jsonl"
@@ -362,9 +364,19 @@ class Coordinator:
                 + "\n".join(titles))
 
     def _tool_submit_claim(self, inp: dict) -> str:
-        ev_ids = {e.evidence_id for e in self._evidence()}
+        ev_ids = {e.evidence_id for e in self._evidence()}  # 仅有效证据
         missing = [i for i in inp["evidence_ids"] if i not in ev_ids]
         if missing:
+            # 区分两种失败：ID 不存在 vs 已废止（后者来自原始库但被判 fail）
+            from .models import read_jsonl, Review
+            raw_ids = set()
+            path = self.data_dir / "evidence.jsonl"
+            if path.exists():
+                raw_ids = {e.evidence_id for e in read_jsonl(path, Evidence)}  # type: ignore[arg-type]
+            invalidated = [i for i in missing if i in raw_ids]
+            if invalidated:
+                return (f"错误：evidence_id 已废止（身份错配审计 D-6），"
+                        f"不得作为论断依据：{invalidated}。请引用当前有效证据。")
             return f"错误：evidence_id 不存在：{missing}。只能引用已登记的证据。"
         c = Claim(text=inp["text"], evidence_ids=inp["evidence_ids"],
                   claim_type=inp["claim_type"], section=inp.get("section"),

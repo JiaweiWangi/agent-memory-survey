@@ -365,3 +365,125 @@ def test_score_multirun_accepts_genuine_completion():
     out3 = ("依据 claim-1（LoCoMo，ACL 2024）与 claim-2（LongMemEval 五能力），"
             "两个基准分别覆盖超长期对话 QA 与能力维度。")
     assert score_multirun("M4-03", out3)["task_completed"]
+
+
+# ------------- 废止证据退出协调器生产路径（D-9，真实 7 条 ID 回归）
+
+
+def _coordinator_with_invalidated(tmp_path: Path):
+    """临时库：2 条有效 + 1 条废止（reviews fail）证据 + 对应 papers 记录。"""
+    from litreview_agent.coordinator import Coordinator
+    from litreview_agent.models import Evidence, Paper, Review, append_jsonl
+    from litreview_agent.memory import MemoryStore
+    e_ok = Evidence(work_id="W0001", source_id="s", locator="pdf:p1",
+                    excerpt="valid evidence about memory", interpretation="i",
+                    evidence_type="mechanism", rq_tags=["RQ3"])
+    e_bad = Evidence(work_id="W0002", source_id="s", locator="pdf:p1",
+                     excerpt="stale evidence from mismatched pdf", interpretation="i",
+                     evidence_type="mechanism", rq_tags=["RQ3"])
+    append_jsonl(tmp_path / "evidence.jsonl", e_ok)
+    append_jsonl(tmp_path / "evidence.jsonl", e_bad)
+    append_jsonl(tmp_path / "papers.jsonl", Paper(work_id="W0001", title="T1"))
+    append_jsonl(tmp_path / "papers.jsonl", Paper(work_id="W0002", title="T2"))
+    append_jsonl(tmp_path / "reviews.jsonl", Review(
+        target_id=e_bad.evidence_id, reviewer_type="auto_check",
+        reviewer_name="test", result="fail", correction="废止"))
+    coord = Coordinator.__new__(Coordinator)
+    coord.data_dir = tmp_path
+    coord.run_id = "test-d9"
+    coord.selected = []
+    coord._page_cache = {}
+    coord.memory = MemoryStore(tmp_path)
+    coord.events_path = tmp_path / "runs" / "t" / "events.jsonl"
+    coord.events_path.parent.mkdir(parents=True, exist_ok=True)
+    return coord, e_ok, e_bad
+
+
+def test_coordinator_hides_invalidated_evidence(tmp_path: Path):
+    """list_evidence 与 RQ 覆盖统计不得计入废止证据（工具行为，非加载器）。"""
+    coord, e_ok, e_bad = _coordinator_with_invalidated(tmp_path)
+    listing = coord._tool_list_evidence({})
+    assert e_bad.evidence_id not in listing, "废止证据不得出现在工具输出"
+    assert e_ok.evidence_id in listing, "有效证据应展示"
+    cov = coord._tool_get_rq_coverage({})
+    # 唯一有效证据带 RQ3 → RQ3 计 1，不得把废止的 RQ3 也计入变 2
+    assert '"RQ3": 1' in cov, f"覆盖统计计入了废止证据: {cov}"
+
+
+def test_coordinator_rejects_claim_on_invalidated_evidence(tmp_path: Path):
+    """submit_claim 引用废止证据 ID 必须明确拒绝（不能仅因 ID 存在而接受）。"""
+    coord, e_ok, e_bad = _coordinator_with_invalidated(tmp_path)
+    r = coord._tool_submit_claim({"text": "论断", "evidence_ids": [e_bad.evidence_id],
+                                  "claim_type": "direct", "section": "脉络"})
+    assert "已废止" in r, r
+    r2 = coord._tool_submit_claim({"text": "论断", "evidence_ids": [e_ok.evidence_id],
+                                   "claim_type": "direct", "section": "脉络"})
+    assert "已登记" in r2 or "claim" in r2.lower(), r2
+
+
+# ------------- 判分 v3 回归（D-11 独立验收发现的三类放行）
+
+
+def test_score_v3_rejects_fabricated_stats_numbers():
+    """M4-01：编造 999/888/777 必须判未完成（数字出现但对象错绑不算事实正确）。"""
+    from litreview_agent.evaluate import score_multirun
+    out = ("核心池 40 篇。RQ3：999 条 RQ4：888 条 RQ5：777 条。"
+           "RQ5 证据最少，下一步重点。")
+    r = score_multirun("M4-01", out)
+    assert not r["task_completed"]
+    assert any("999" in p for p in r["problems"])
+
+
+def test_score_v3_rejects_reversed_queue():
+    """M4-02：'已完成 W0006，下一篇 W0002' 颠倒队列必须判未完成。"""
+    from litreview_agent.evaluate import score_multirun
+    for out in ("已完成 W0006 的证据提取，接下来应处理 W0002。",
+                "W0006 已完成，下一篇处理 W0002。"):
+        r = score_multirun("M4-02", out)
+        assert not r["task_completed"], out
+        assert any("颠倒" in p for p in r["problems"])
+
+
+def test_score_v3_rejects_contradicted_claim_content():
+    """M4-03：合法 claim 编号 + 与 claim 相反的内容必须判未完成。"""
+    from litreview_agent.evaluate import score_multirun
+    out = "依据 claim-1，LoCoMo 是图像分类数据集；LongMemEval 不涉及长期记忆。"
+    r = score_multirun("M4-03", out)
+    assert not r["task_completed"]
+    assert any("不符" in p for p in r["problems"])
+
+
+def test_score_v3_accepts_paraphrased_genuine_answers():
+    """防过严：正常改写（'RQ3 共 20 条'分隔符、markdown 列表）必须通过。"""
+    from litreview_agent.evaluate import score_multirun
+    r1 = score_multirun("M4-01",
+        "核心池 40 篇，29 篇已有证据；RQ3 共 20 条，RQ4 共 15 条，RQ5 共 12 条。"
+        "证据最少的是 RQ5，建议作为下一步处理重点。")
+    assert r1["task_completed"], r1
+    r2 = score_multirun("M4-02",
+        "根据上次运行的输出记录：\n- 上一篇处理完的论文：W0002（已完成证据提取）"
+        "\n- 接下来应处理的论文：W0006")
+    assert r2["task_completed"], r2
+
+
+# ------------- 语料检查失败行为（D-12：空目录不得返回成功）
+
+
+def test_check_corpus_fails_on_empty_or_missing(tmp_path: Path, capsys):
+    """空目录/缺必需文件必须返回失败并打印原因。"""
+    from litreview_agent.stages import check_corpus
+    # 空目录
+    rc = check_corpus(tmp_path)
+    assert rc == 1, "空目录必须失败"
+    out = capsys.readouterr().out
+    assert "必需文件缺失" in out or "失败" in out
+    # 只有 papers.jsonl（缺 evidence/search_runs）
+    (tmp_path / "papers.jsonl").write_text(
+        '{"work_id": "W0001", "title": "T", "source_id": "s1", '
+        '"inclusion_status": "candidate", "discovered_by": "t", '
+        '"fulltext_status": "unknown", "authors": [], "rq_tags": [], '
+        '"url": null, "doi": null, "arxiv_id": null, "venue": null, '
+        '"year": null, "version": null, "reason": null, "local_path": null, '
+        '"file_hash": null, "publication_status": null, "checked_at": null}\n')
+    rc2 = check_corpus(tmp_path)
+    assert rc2 == 1, "缺 evidence/search_runs 必须失败"

@@ -21,7 +21,12 @@
 cd Acdamic-Writing-Class-Task
 uv sync                                  # 恢复依赖
 uv run pytest                            # 不变量测试（去重/记忆/引用/重启）
-uv run litreview check --scope corpus    # 语料计数与不变量检查
+uv run litreview check --scope corpus    # 语料计数与不变量检查（默认 data/）
+
+# 从提交包离线复查（不依赖原项目目录；数据在 evidence_manifest/）：
+cd submission/agent_source
+uv run litreview --data-dir ../evidence_manifest check --scope corpus
+# → 期望：papers.jsonl 726 条当前记录 / 有效证据 342（废止 7 条保留）/ 检索运行 104 次
 
 # 研究流程（按阶段）
 uv run litreview run --stage discovery       # G1：多源检索 + 去重
