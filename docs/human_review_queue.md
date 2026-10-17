@@ -1,22 +1,57 @@
 # 人工核验队列（真人任务）
 
-生成时间：2026-10-17T08:19:35+00:00。本清单由核验包生成器从真实数据产生；
+生成时间：2026-10-17T09:44:34+00:00。本清单由核验包生成器从真实数据产生；
 所有条目状态为**待核验**。核验结果由成员写入 `data/reviews.jsonl`，
 格式见 `docs/protocol.md` §7；不要在本文件直接打勾——以 reviews.jsonl 为准。
 
-## 1. 文献核验（候选引用池：5 项）
+## 1. 文献核验（核心阅读池：40 项）
 
 每项需要：① 身份核验（题名/作者/年份/venue/DOI 与正式记录一致）；
 ② 版本核验（预印本 vs 正式版，主引用版本正确，证据页码绑定读取版本）；
 ③ 抽查 ≥1 条使用证据（excerpt 与所指标记页是否逐字一致、interpretation 无过度引申）。
 
-| 优先级 | work | 题名（截断） | 年份 | 证据数 | 核验要点 |
-|---|---|---|---|---|---|
-| P0 | W0076 | Memory Poisoning Attack and Defense on Memory Based LLM-Agen | 2026 | 2 | 单版本 |
-| P1 | W0006 | LongMemEval: Benchmarking Chat Assistants on Long-Term Inter | 2024 | 6 | 单版本 |
-| P1 | W0034 | Selective Forgetting: A Graph-Based Memory Framework for Lon | 2026 | 4 | 单版本 |
-| P1 | W0039 | A Survey on Long-Term Memory Security in LLM Agents: Attacks | 2026 | 11 | 单版本 |
-| P2 | W0002 | MemGPT: Towards LLMs as Operating Systems | 2023 | 7 | 单版本 |
+| 优先级 | work | 层 | 题名（截断） | 年份 | 证据数 | 核验要点 |
+|---|---|---|---|---|---|---|
+| P0 | W0010 | L5-非恶意可靠性 | Agent Zero Memory: Provenance-Aware Long-Term Memory for | 2026 | 4 | 单版本 |
+| P0 | W0011 | L3-更新遗忘 | Preference-Aware Memory Update for Long-Term LLM Agents | 2026 | 3 | 单版本 |
+| P0 | W0012 | L3-更新遗忘 | Retrieval-Driven Memory Reconsolidation for Long-Term LL | 2026 | 4 | 单版本 |
+| P0 | W0034 | L3-更新遗忘 | Selective Forgetting: A Graph-Based Memory Framework for | 2026 | 4 | 单版本 |
+| P0 | W0076 | L6-安全投毒 | Memory Poisoning Attack and Defense on Memory Based LLM- | 2026 | 2 | 单版本 |
+| P0 | W0077 | L3-更新遗忘 | Memory Canonicalization: A Framework and Benchmark for C | 2026 | 2 | 单版本 |
+| P0 | W0178 | L3-更新遗忘 | Forget to Improve: On-Device LLM-Agent Continual Learnin | 2026 | 2 | 单版本 |
+| P0 | W0180 | L3-更新遗忘 | What Should an Agent Forget? Separating What Is Stored f | 2026 | 3 | 单版本 |
+| P0 | W0199 | L3-更新遗忘 | When to Forget: A Memory Governance Primitive | 2026 | 4 | 单版本 |
+| P0 | W0207 | L5-非恶意可靠性 | What to Keep, What to Forget: A Rate--Distortion View of | 2026 | 4 | 单版本 |
+| P0 | W0261 | L5-非恶意可靠性 | HaluMem: Evaluating Hallucinations in Memory Systems of  | 2025 | 4 | 单版本 |
+| P0 | W0312 | L6-安全投毒 | The Price of Safety: Benign-Case Utility and Token Overh | 2026 | 2 | 单版本 |
+| P0 | W0319 | L6-安全投毒 | MemPoison: Bypassing Selective Memory Mechanisms to Plan | 2026 | 3 | 单版本 |
+| P0 | W0688 | L5-非恶意可靠性 | The Hallucination Snowball: Modeling Error Propagation a | 2026 | 3 | 单版本 |
+| P0 | W0690 | L5-非恶意可靠性 | The Right Memory in the Wrong Context: Verifying Retriev | 2026 | 4 | 单版本 |
+| P1 | W0001 | L1-基础系统 | Generative Agents: Interactive Simulacra of Human Behavi | 2023 | 2 | 单版本 |
+| P1 | W0002 | L1-基础系统 | MemGPT: Towards LLMs as Operating Systems | 2023 | 7 | 单版本 |
+| P1 | W0003 | L1-基础系统 | MemoryBank: Enhancing Large Language Models with Long-Te | 2024 | 4 | 单版本；arXiv:2307.08909 |
+| P1 | W0004 | L1-基础系统 | Reflexion: language agents with verbal reinforcement lea | 2023 | 3 | 单版本；arXiv:2305.10250 |
+| P1 | W0005 | L4-评测 | Evaluating Very Long-Term Conversational Memory of LLM A | 2024 | 3 | 单版本 |
+| P1 | W0006 | L4-评测 | LongMemEval: Benchmarking Chat Assistants on Long-Term I | 2024 | 6 | 单版本 |
+| P1 | W0028 | L2-组织检索 | Mem++: Non-Destructive Memory for Long-Term Organization | 2026 | 4 | 单版本 |
+| P1 | W0030 | L2-组织检索 | HiGMem: A Hierarchical and LLM-Guided Memory System for  | 2026 | 2 | 3 版本记录 |
+| P1 | W0031 | L4-评测 | When Does Memory Help? A Cost-Aware Evaluation of Long-T | 2026 | 3 | 单版本 |
+| P1 | W0099 | L2-组织检索 | Synapse: Empowering LLM Agents with Episodic-Semantic Me | 2026 | 6 | 2 版本记录 |
+| P1 | W0105 | L2-组织检索 | MIRIX: Multi-Agent Memory System for LLM-Based Agents | 2025 | 4 | 单版本 |
+| P1 | W0107 | L2-组织检索 | RecMem: Recurrence-based Memory Consolidation for Effici | 2026 | 3 | 3 版本记录 |
+| P1 | W0171 | L4-评测 | From Recall to Forgetting: Benchmarking Long-Term Memory | 2026 | 3 | 3 版本记录 |
+| P1 | W0222 | L2-组织检索 | SodaMem: Evidence-Grounded Temporal Graph Memory for LLM | 2026 | 4 | 单版本 |
+| P1 | W0379 | L4-评测 | Mem-Gallery: Benchmarking Multimodal Long-Term Conversat | 2026 | 2 | 3 版本记录 |
+| P1 | W0434 | L4-评测 | MemBuilder: Reinforcing LLMs for Long-Term Memory Constr | 2026 | 2 | 单版本 |
+| P1 | W0618 | L1-基础系统 | ExpeL: LLM Agents Are Experiential Learners | 2024 | 2 | 单版本；arXiv:2308.10144 |
+| P1 | W0680 | L1-基础系统 | RET-LLM: Towards a General Read-Write Memory for Large L | 2023 | 5 | 单版本 |
+| P1 | W0681 | L1-基础系统 | A-Mem: Agentic Memory for LLM Agents | 2025 | 4 | 单版本；arXiv:2502.12110 |
+| P1 | W0682 | L1-基础系统 | Mem0: Building Production-Ready AI Agents with Scalable  | 2025 | 1 | 单版本；arXiv:2504.19413 |
+| P1 | W0684 | L2-组织检索 | Zep: A Temporal Knowledge Graph Architecture for Agent M | 2025 | 4 | 单版本 |
+| P1 | W0691 | L4-评测 | MemBench: Towards More Comprehensive Evaluation on the M | 2025 | 2 | 单版本 |
+| P2 | W0039 | L7-综述与边界 | A Survey on Long-Term Memory Security in LLM Agents: Att | 2026 | 11 | 单版本 |
+| P2 | W0056 | L7-综述与边界 | A Survey on the Memory Mechanism of Large Language Model | 2025 | 0 | 单版本 |
+| P2 | W0140 | L7-综述与边界 | Cognitive Architectures for Language Agents | 2023 | 5 | 单版本 |
 
 ## 2. 边界判定复核（模型判定，建议真人裁决）
 
@@ -25,6 +60,7 @@
 - **W0145**（pending）：MAGMA: A Multi-Graph based Agentic Memory Architecture for AI Agents — 理由：uncertain | 无摘要，标题涉及多图Agentic记忆架构，需正文确认是否针对LLM长期记忆。
 - **W0167**（pending）：Episodic Memory Model For Embodied Conversational Agents — 理由：uncertain | 摘要提及 ECA 架构，但无法确认是否涉及基于 LLM 的跨会话外部记忆机制，还是传统符号或规则式记忆。
 - **W0182**（excluded）：The mitigating effect of repeated memory reactivations on forgetting — 理由：out_of_scope | 人类记忆再激活与遗忘研究，非 LLM。
+- **W0185**（excluded）：Forgetting Enhances Episodic Control With Structured Memories — 理由：out_of_scope | 人工重审：哺乳动物大脑遗忘神经科学，非 LLM 记忆系统
 - **W0198**（excluded）：Optimal forgetting: Semantic compression of episodic memories — 理由：out_of_scope | 人类情景记忆语义压缩研究，非 LLM。
 - **W0211**（excluded）：Online Class-incremental Continual Learning with Maximum Entropy Memor — 理由：out_of_scope | 持续学习中的记忆更新，非 LLM 跨会话记忆机制。
 - **W0219**（excluded）：MemoReason: Evaluating the Effect of Parametric Memory on Contextual R — 理由：out_of_scope | 研究参数化记忆对上下文推理的影响，不涉及跨会话外部记忆机制。
@@ -58,10 +94,12 @@
 - **W0507**（excluded）：Reviewer #1 (Public Review): Episodic long-term memory formation durin — 理由：out_of_scope | 关于慢波睡眠中人类情景记忆形成，非 LLM 记忆研究。
 - **W0526**（excluded）：Understanding the planning of LLM agents: A survey — 理由：out_of_scope | 综述LLM智能体的规划能力，不聚焦记忆组织、更新或评测。
 - **W0534**（excluded）：MeMAT: Multi-agent transformer with deep long-term memory, short-term  — 理由：out_of_scope | 多智能体 Transformer 记忆架构，非 LLM 外部记忆系统研究。
+- **W0547**（excluded）：Four-hour delayed memory recall for stories: Theoretical and clinical  — 理由：out_of_scope | 人工重审：人类记忆心理学研究，非 LLM 智能体（无摘要、标题与 venue 均指向人类被试）
 - **W0550**（excluded）：ASSOCIATIONS AND FORGETTING IN LONG-TERM MEMORY — 理由：out_of_scope | 标题涉及人类长期记忆，未使用 LLM，与 LLM 智能体记忆无关。
 - **W0553**（excluded）：Acquisition, Recall, and Forgetting of Verbal Information in Long-Term — 理由：out_of_scope | 涉及不同年龄个体的言语信息长期记忆，属于认知心理学研究，非 LLM 记忆系统。
 - **W0685**（excluded）：Titans: Learning to Memorize at Test Time — 理由：out_of_scope | Titans研究测试时记忆架构与长序列建模，属于模型架构层面，非跨会话外部记忆系统。
 - **W0687**（excluded）：MemoRAG: Boosting Long Context Processing with Global Memory-Enhanced  — 理由：out_of_scope | MemoRAG关注长上下文处理与检索增强，记忆用于单次查询内全局上下文，非跨会话智能体外部记忆。
+- **W0689**（pending）：LLM as a Broken Telephone: Iterative Generation Distorts Information — 理由：uncertain | 迭代生成信息失真，可能与跨会话记忆迭代更新相关，但摘要未明确涉及智能体记忆机制。
 
 ## 3. Claims 复核（当前 7 条）
 
@@ -107,8 +145,8 @@ synthesis 类需核对全部引用证据与综合理由。
 
 ## 4. 汇总
 
-- 文献核验任务：5 项（P0 优先：更新与可靠性分支）
-- 边界复核：42 项
+- 文献核验任务：40 项（P0 优先：更新与可靠性分支）
+- 边界复核：45 项
 - Claims 复核：7 条
-- 合计约 54 个核验任务；建议三人按 P0→P1→P2 分摊，
+- 合计约 92 个核验任务；建议三人按 P0→P1→P2 分摊，
   同一人整理的关键部分由另一成员复核（EXECUTION_PLAN §5.4）。

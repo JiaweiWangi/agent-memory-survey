@@ -8,14 +8,14 @@
 
 | work | 题名（截断） | 年份 | 发表 | 角色 | RQ | 阅读 |
 |---|---|---|---|---|---|---|
-| W0001 | Generative Agents: Interactive Simulacra of Hu | 2023 | ACM Symposium on User In | 奠基范式 | RQ1,RQ2 | 待正文审读 |
+| W0001 | Generative Agents: Interactive Simulacra of Hu | 2023 | ACM Symposium on User In | 奠基范式 | RQ1,RQ2 | 已读(证据2条) |
 | W0002 | MemGPT: Towards LLMs as Operating Systems | 2023 | arXiv (Cornell Universit | 虚拟上下文管理 | RQ1,RQ2 | 已读(证据7条) |
-| W0003 | MemoryBank: Enhancing Large Language Models wi | 2024 | Proceedings of the AAAI  | 遗忘引入 | RQ3 | 待正文审读 |
-| W0004 | Reflexion: language agents with verbal reinfor | 2023 | neural information proce | 语言化经验 | RQ2,RQ1 | 待正文审读 |
-| W0680 | RET-LLM: Towards a General Read-Write Memory f | 2023 | arXiv (Cornell Universit | 读写式记忆 | RQ2,RQ3 | 待正文审读 |
-| W0618 | ExpeL: LLM Agents Are Experiential Learners | 2024 | Proceedings of the AAAI  | 经验池 | RQ2 | 待正文审读 |
-| W0681 | A-Mem: Agentic Memory for LLM Agents | 2025 | neural information proce | 动态组织 | RQ2,RQ3 | 待正文审读 |
-| W0682 | Mem0: Building Production-Ready AI Agents with | 2025 | Frontiers in artificial  | 生产级记忆操作 | RQ2,RQ3,RQ5 | 待正文审读 |
+| W0003 | MemoryBank: Enhancing Large Language Models wi | 2024 | Proceedings of the AAAI  | 遗忘引入 | RQ3 | 已读(证据4条) |
+| W0004 | Reflexion: language agents with verbal reinfor | 2023 | neural information proce | 语言化经验 | RQ2,RQ1 | 已读(证据3条) |
+| W0680 | RET-LLM: Towards a General Read-Write Memory f | 2023 | arXiv (Cornell Universit | 读写式记忆 | RQ2,RQ3 | 已读(证据5条) |
+| W0618 | ExpeL: LLM Agents Are Experiential Learners | 2024 | Proceedings of the AAAI  | 经验池 | RQ2 | 已读(证据2条) |
+| W0681 | A-Mem: Agentic Memory for LLM Agents | 2025 | neural information proce | 动态组织 | RQ2,RQ3 | 已读(证据4条) |
+| W0682 | Mem0: Building Production-Ready AI Agents with | 2025 | Frontiers in artificial  | 生产级记忆操作 | RQ2,RQ3,RQ5 | 已读(证据1条) |
 
 - **W0001 奠基范式**：记忆流+新近度/重要度/相关度三因子检索+反思生成高层记忆；后续几乎所有智能体记忆工作引用此范式。作用：组织与检索层的起点。差异：首次把'记忆流'作为智能体基础设施。
 - **W0002 虚拟上下文管理**：把上下文窗口当内存、外部存储当磁盘的 OS 隐喻，self-editing 记忆。作用：上下文工程路线代表。差异：以分页/中断机制解决容量，而非检索质量。
@@ -30,13 +30,13 @@
 
 | work | 题名（截断） | 年份 | 发表 | 角色 | RQ | 阅读 |
 |---|---|---|---|---|---|---|
-| W0684 | Zep: A Temporal Knowledge Graph Architecture f | 2025 | arXiv (Cornell Universit | 时间知识图谱 | RQ2,RQ3 | 待正文审读 |
+| W0684 | Zep: A Temporal Knowledge Graph Architecture f | 2025 | arXiv (Cornell Universit | 时间知识图谱 | RQ2,RQ3 | 已读(证据4条) |
 | W0028 | Mem++: Non-Destructive Memory for Long-Term Or | 2026 | arXiv (Cornell Universit | 非破坏性组织 | RQ2,RQ3 | 已读(证据4条) |
-| W0099 | Synapse: Empowering LLM Agents with Episodic-S | 2026 | arXiv | 情景-语义分层 | RQ1,RQ2 | 待正文审读 |
-| W0030 | HiGMem: A Hierarchical and LLM-Guided Memory S | 2026 | arXiv (Cornell Universit | 分层图记忆 | RQ2 | 待正文审读 |
+| W0099 | Synapse: Empowering LLM Agents with Episodic-S | 2026 | arXiv | 情景-语义分层 | RQ1,RQ2 | 已读(证据6条) |
+| W0030 | HiGMem: A Hierarchical and LLM-Guided Memory S | 2026 | arXiv (Cornell Universit | 分层图记忆 | RQ2 | 已读(证据2条) |
 | W0107 | RecMem: Recurrence-based Memory Consolidation  | 2026 | arXiv (Cornell Universit | 递归巩固 | RQ2,RQ3 | 已读(证据3条) |
 | W0222 | SodaMem: Evidence-Grounded Temporal Graph Memo | 2026 | arXiv (Cornell Universit | 证据锚定时间图 | RQ2,RQ4 | 已读(证据4条) |
-| W0105 | MIRIX: Multi-Agent Memory System for LLM-Based | 2025 | arXiv (Cornell Universit | 多类型记忆系统 | RQ1,RQ2 | 待正文审读 |
+| W0105 | MIRIX: Multi-Agent Memory System for LLM-Based | 2025 | arXiv (Cornell Universit | 多类型记忆系统 | RQ1,RQ2 | 已读(证据4条) |
 
 - **W0684 时间知识图谱**：对话事件实时构建带时间有效期的实体关系图。作用：时间感知组织。差异：图结构+时间元数据，区别于向量库。
 - **W0028 非破坏性组织**：写入不破坏原始记录，读取时按查询物化视图。作用：解决'保留原始 vs 结构化'权衡。差异：读时选择范式。
@@ -53,10 +53,10 @@
 | W0034 | Selective Forgetting: A Graph-Based Memory Fra | 2026 | arXiv (Cornell Universit | 图记忆选择性遗忘 | RQ3,RQ5 | 已读(证据4条) |
 | W0199 | When to Forget: A Memory Governance Primitive | 2026 | arXiv (Cornell Universit | 遗忘治理原语 | RQ3,RQ5 | 已读(证据4条) |
 | W0180 | What Should an Agent Forget? Separating What I | 2026 | arXiv (Cornell Universit | 存储/使用分离 | RQ3 | 已读(证据3条) |
-| W0011 | Preference-Aware Memory Update for Long-Term L | 2026 | arXiv | 偏好演变更新 | RQ3 | 待正文审读 |
+| W0011 | Preference-Aware Memory Update for Long-Term L | 2026 | arXiv | 偏好演变更新 | RQ3 | 已读(证据3条) |
 | W0178 | Forget to Improve: On-Device LLM-Agent Continu | 2026 | arXiv (Cornell Universit | 预算策展遗忘 | RQ3 | 已读(证据2条) |
-| W0012 | Retrieval-Driven Memory Reconsolidation for Lo | 2026 | arXiv (Cornell Universit | 检索驱动再巩固 | RQ3,RQ1 | 待正文审读 |
-| W0077 | Memory Canonicalization: A Framework and Bench | 2026 | arXiv (Cornell Universit | 版本规范化 | RQ3,RQ5 | 待正文审读 |
+| W0012 | Retrieval-Driven Memory Reconsolidation for Lo | 2026 | arXiv (Cornell Universit | 检索驱动再巩固 | RQ3,RQ1 | 已读(证据4条) |
+| W0077 | Memory Canonicalization: A Framework and Bench | 2026 | arXiv (Cornell Universit | 版本规范化 | RQ3,RQ5 | 已读(证据2条) |
 
 - **W0034 图记忆选择性遗忘**：图记忆上的一次性剪枝：27,021 节点图移除 9.8% 节点/9.5% 字节而 token F1 基本不变。作用：遗忘的实证效果。差异：图粒度遗忘及成本-效果测量。
 - **W0199 遗忘治理原语**：记忆价值(MW)指标+遗忘决策原语；过时记忆 MW 0.17 vs 专家记忆 0.77。作用：何时遗忘的可操作判据。差异：治理视角而非机制视角。
@@ -70,13 +70,13 @@
 
 | work | 题名（截断） | 年份 | 发表 | 角色 | RQ | 阅读 |
 |---|---|---|---|---|---|---|
-| W0005 | Evaluating Very Long-Term Conversational Memor | 2024 | Annual Meeting of the As | 超长期对话QA | RQ5 | 待正文审读 |
+| W0005 | Evaluating Very Long-Term Conversational Memor | 2024 | Annual Meeting of the As | 超长期对话QA | RQ5 | 已读(证据3条) |
 | W0006 | LongMemEval: Benchmarking Chat Assistants on L | 2024 | arXiv (Cornell Universit | 五能力维度 | RQ5,RQ3 | 已读(证据6条) |
-| W0171 | From Recall to Forgetting: Benchmarking Long-T | 2026 | arXiv (Cornell Universit | 召回vs遗忘 | RQ5,RQ3 | 待正文审读 |
-| W0379 | Mem-Gallery: Benchmarking Multimodal Long-Term | 2026 | arXiv (Cornell Universit | 多模态评测 | RQ5,RQ1 | 待正文审读 |
-| W0434 | MemBuilder: Reinforcing LLMs for Long-Term Mem | 2026 | arXiv (Cornell Universit | 记忆构建评测 | RQ5,RQ2 | 待正文审读 |
-| W0691 | MemBench: Towards More Comprehensive Evaluatio | 2025 | arXiv | 综合记忆评测 | RQ5 | 待正文审读 |
-| W0031 | When Does Memory Help? A Cost-Aware Evaluation | 2026 | arXiv (Cornell Universit | 成本感知评测 | RQ5,RQ2 | 待正文审读 |
+| W0171 | From Recall to Forgetting: Benchmarking Long-T | 2026 | arXiv (Cornell Universit | 召回vs遗忘 | RQ5,RQ3 | 已读(证据3条) |
+| W0379 | Mem-Gallery: Benchmarking Multimodal Long-Term | 2026 | arXiv (Cornell Universit | 多模态评测 | RQ5,RQ1 | 已读(证据2条) |
+| W0434 | MemBuilder: Reinforcing LLMs for Long-Term Mem | 2026 | arXiv (Cornell Universit | 记忆构建评测 | RQ5,RQ2 | 已读(证据2条) |
+| W0691 | MemBench: Towards More Comprehensive Evaluatio | 2025 | arXiv | 综合记忆评测 | RQ5 | 已读(证据2条) |
+| W0031 | When Does Memory Help? A Cost-Aware Evaluation | 2026 | arXiv (Cornell Universit | 成本感知评测 | RQ5,RQ2 | 已读(证据3条) |
 
 - **W0005 超长期对话QA**：LoCoMo 基准（ACL 2024，被引85）：超长对话+多类型 QA。作用：评测层锚点。差异：会话跨度(35轮/最高26K token)远超此前基准。
 - **W0006 五能力维度**：ICLR 2025：信息抽取/多会话推理/时间推理/知识更新/拒绝回答五维度。作用：能力分类学。差异：知识更新与拒绝首次入基准。
@@ -90,10 +90,10 @@
 
 | work | 题名（截断） | 年份 | 发表 | 角色 | RQ | 阅读 |
 |---|---|---|---|---|---|---|
-| W0688 | The Hallucination Snowball: Modeling Error Pro | 2026 | arXiv (Cornell Universit | 错误传播 | RQ4 | 待正文审读 |
-| W0690 | The Right Memory in the Wrong Context: Verifyi | 2026 | arXiv (Cornell Universit | 检索可采纳性 | RQ4,RQ3 | 待正文审读 |
-| W0207 | What to Keep, What to Forget: A Rate--Distorti | 2026 | arXiv (Cornell Universit | 压缩信息损失 | RQ4,RQ3 | 待正文审读 |
-| W0261 | HaluMem: Evaluating Hallucinations in Memory S | 2025 | arXiv (Cornell Universit | 记忆幻觉评测 | RQ4,RQ5 | 待正文审读 |
+| W0688 | The Hallucination Snowball: Modeling Error Pro | 2026 | arXiv (Cornell Universit | 错误传播 | RQ4 | 已读(证据3条) |
+| W0690 | The Right Memory in the Wrong Context: Verifyi | 2026 | arXiv (Cornell Universit | 检索可采纳性 | RQ4,RQ3 | 已读(证据4条) |
+| W0207 | What to Keep, What to Forget: A Rate--Distorti | 2026 | arXiv (Cornell Universit | 压缩信息损失 | RQ4,RQ3 | 已读(证据4条) |
+| W0261 | HaluMem: Evaluating Hallucinations in Memory S | 2025 | arXiv (Cornell Universit | 记忆幻觉评测 | RQ4,RQ5 | 已读(证据4条) |
 | W0010 | Agent Zero Memory: Provenance-Aware Long-Term  | 2026 | arXiv (Cornell Universit | 来源感知 | RQ4 | 已读(证据4条) |
 
 - **W0688 错误传播**：错误经状态转移传播的建模（雪球效应）。作用：可靠性核心问题——错误如何进入并放大。差异：传播动力学视角。
@@ -118,7 +118,7 @@
 
 | work | 题名（截断） | 年份 | 发表 | 角色 | RQ | 阅读 |
 |---|---|---|---|---|---|---|
-| W0140 | Cognitive Architectures for Language Agents | 2023 | arXiv (Cornell Universit | 概念框架 | RQ1 | 待正文审读 |
+| W0140 | Cognitive Architectures for Language Agents | 2023 | arXiv (Cornell Universit | 概念框架 | RQ1 | 已读(证据5条) |
 | W0039 | A Survey on Long-Term Memory Security in LLM A | 2026 | arXiv (Cornell Universit | 安全综述 | RQ4,RQ1 | 已读(证据11条) |
 | W0056 | A Survey on the Memory Mechanism of Large Lang | 2025 | ACM Transactions on Info | 记忆机制综述 | RQ1,RQ2 | 待正文审读 |
 

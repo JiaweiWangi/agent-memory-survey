@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -31,13 +32,27 @@ def generate_review_queue(data_dir: Path) -> dict[str, Any]:
     for e in evidence:  # type: ignore[arg-type]
         ev_by_work.setdefault(e.work_id, []).append(e)
 
-    # 候选引用 = included 且有证据（正文筛选通过）
-    cited_pool = [wid for wid, recs in works.items()
-                  if any(r.inclusion_status == "included" for r in recs)
-                  and wid in ev_by_work]
-    # 分支优先级（核心章节优先核验）
-    prio = {"update": "P0", "reliability": "P0", "eval": "P1",
-            "survey": "P1", "background": "P2", "organize": "P1"}
+    # 候选引用 = 核心阅读池成员（D-3 策略；core_pool.jsonl 为准）
+    core_path = data_dir / "core_pool.jsonl"
+    if core_path.exists():
+        core_ids = {json.loads(l)["work_id"] for l in
+                    core_path.read_text(encoding="utf-8").splitlines() if l.strip()}
+    else:
+        core_ids = {wid for wid, recs in works.items()
+                    if any(r.inclusion_status == "included" for r in recs)
+                    and wid in ev_by_work}
+    cited_pool = [wid for wid in core_ids if wid in ev_by_work or wid in works]
+    # 优先级：更新与可靠性层 P0（用户策略：综述重点）
+    prio = {"L3-更新遗忘": "P0", "L5-非恶意可靠性": "P0", "L6-安全投毒": "P0",
+            "L4-评测": "P1", "L1-基础系统": "P1", "L2-组织检索": "P1",
+            "L7-综述与边界": "P2"}
+    # core_pool 的层信息
+    layer_of = {}
+    if core_path.exists():
+        for l in core_path.read_text(encoding="utf-8").splitlines():
+            if l.strip():
+                rec = json.loads(l)
+                layer_of[rec["work_id"]] = rec["layer"]
 
     lines = ["# 人工核验队列（真人任务）", "",
              "生成时间：" + _now() + "。本清单由核验包生成器从真实数据产生；",
@@ -46,23 +61,24 @@ def generate_review_queue(data_dir: Path) -> dict[str, Any]:
              ""]
 
     # ---- 1. 文献身份/版本/证据核验
-    lines += ["## 1. 文献核验（候选引用池：" + str(len(cited_pool)) + " 项）", "",
+    lines += ["## 1. 文献核验（核心阅读池：" + str(len(cited_pool)) + " 项）", "",
               "每项需要：① 身份核验（题名/作者/年份/venue/DOI 与正式记录一致）；",
               "② 版本核验（预印本 vs 正式版，主引用版本正确，证据页码绑定读取版本）；",
               "③ 抽查 ≥1 条使用证据（excerpt 与所指标记页是否逐字一致、interpretation 无过度引申）。",
               "",
-              "| 优先级 | work | 题名（截断） | 年份 | 证据数 | 核验要点 |",
-              "|---|---|---|---|---|---|"]
+              "| 优先级 | work | 层 | 题名（截断） | 年份 | 证据数 | 核验要点 |",
+              "|---|---|---|---|---|---|---|"]
     for wid in sorted(cited_pool,
-                      key=lambda w: (prio.get(_branch(works, w), "P2"), w)):
+                      key=lambda w: (prio.get(layer_of.get(w, ""), "P2"), w)):
         recs = works[wid]
         p = next((r for r in recs if r.inclusion_status == "included"), recs[0])
         n_versions = len(recs)
         version_note = f"{n_versions} 版本记录" if n_versions > 1 else "单版本"
         ax = p.arxiv_id or ""
-        lines.append(f"| {prio.get(_branch(works, wid), 'P2')} | {wid} "
-                     f"| {p.title[:60]} | {p.year or '?'} "
-                     f"| {len(ev_by_work[wid])} | {version_note}"
+        layer = layer_of.get(wid, "?")
+        lines.append(f"| {prio.get(layer, 'P2')} | {wid} | {layer[:12]} "
+                     f"| {p.title[:56]} | {p.year or '?'} "
+                     f"| {len(ev_by_work.get(wid, []))} | {version_note}"
                      f"{'；arXiv:' + ax if ax else ''} |")
     lines.append("")
 
