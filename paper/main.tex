@@ -1,0 +1,35 @@
+\documentclass[UTF8, a4paper, zihao=-4]{ctexart}
+% 模板：ctexart + natbib 数字引用（EXECUTION_PLAN §8.3；课程模板下发后迁移）
+\usepackage[numbers, sort&compress]{natbib}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{hyperref}
+
+\title{\textbf{大模型智能体的长期记忆：\\组织、更新与可靠性评测综述}}
+\author{成员 A\quad 成员 B\quad 成员 C}  % 待真人姓名替换
+\date{2026 年 10 月}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+% 最后写：问题、检索范围、主要综合发现、局限
+（摘要待正文完成后撰写。）
+\par\textbf{关键词：}大语言模型；智能体；长期记忆；记忆更新；可靠性；评测
+\end{abstract}
+
+\input{sections/intro}
+\input{sections/concepts}
+\input{sections/taxonomy}
+\input{sections/update_reliability}
+\input{sections/evaluation}
+\input{sections/challenges}
+\input{sections/conclusion}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}

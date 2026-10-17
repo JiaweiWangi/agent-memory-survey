@@ -330,8 +330,23 @@ def run_evidence_batch(data_dir: Path, max_works: int | None = None) -> int:
     """G3 批量证据提取（决策 D-2：单篇单调用 + G2 验证器）。"""
     from .evidence_batch import run_evidence_batch as _run
     from .model_backends import AnthropicBackend
+    from .models import RunEvent, append_jsonl
 
-    backend = AnthropicBackend()
+    # usage 先记到临时位置，run_id 确定后由批处理自身日志接管不了——
+    # 这里创建一个共享日志文件，与批处理 run 目录分开但可对账
+    usage_path = data_dir / "derived" / "evidence_batch_usage.jsonl"
+    usage_path.parent.mkdir(parents=True, exist_ok=True)
+
+    def _usage_logger(d: dict) -> None:
+        if d.get("kind") == "model_result":
+            u = d.get("usage") or {}
+            append_jsonl(usage_path, RunEvent(
+                run_id="evidence-batch", kind="usage", model=d.get("model"),
+                prompt_version=d.get("prompt_version"),
+                input_tokens=u.get("input_tokens"),
+                output_tokens=u.get("output_tokens"), status="ok"))
+
+    backend = AnthropicBackend(logger=_usage_logger)
     stats = _run(data_dir, backend, max_works=max_works)
     print("== 批量证据提取结果 ==")
     for k, v in stats.items():

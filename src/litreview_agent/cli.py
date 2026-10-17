@@ -35,6 +35,12 @@ def main(argv: list[str] | None = None) -> int:
     p_check = sub.add_parser("check", help="检查器")
     p_check.add_argument("--scope", required=True, choices=["corpus", "manuscript"])
 
+    p_bib = sub.add_parser("bibgen", help="从 papers.jsonl 生成 references.bib")
+    p_bib.add_argument("--out", default=None, help="输出路径（默认 paper/references.bib）")
+
+    p_eval = sub.add_parser("evaluate", help="运行冻结评估案例（A/B/C 条件）")
+    p_eval.add_argument("--cases", default=None, help="案例文件（默认 evaluation/cases.jsonl）")
+
     args = parser.parse_args(argv)
     data_dir = Path(args.data_dir)
 
@@ -62,8 +68,31 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "check":
         if args.scope == "corpus":
             return stages.check_corpus(data_dir)
+    if args.cmd == "bibgen":
+        from .bibgen import generate_bib
+        out = Path(args.out) if args.out else ROOT / "paper" / "references.bib"
+        stats = generate_bib(data_dir, out)
+        print(f"bib 生成：{stats['entries']} 条（跳过无证据 {stats['skipped_no_evidence']}"
+              f"）→ {out}")
+        return 0
+    if args.cmd == "evaluate":
+        from .evaluate import run_evaluation
+        from .model_backends import AnthropicBackend
+        cases = Path(args.cases) if args.cases else ROOT / "evaluation" / "cases.jsonl"
+        results = cases.parent / "results.jsonl"
+        if results.exists():
+            stamp = now_stamp()
+            results.rename(cases.parent / f"results_{stamp}.jsonl.bak")
+        stats = run_evaluation(cases, results, AnthropicBackend())
+        print(f"评估执行：{stats['executed']}/{stats['total_expected']} → {stats['results']}")
+        return 0
     parser.error("未知组合")
     return 2
+
+
+def now_stamp() -> str:
+    from datetime import datetime
+    return datetime.now().strftime("%m%d%H%M%S")
 
 
 if __name__ == "__main__":

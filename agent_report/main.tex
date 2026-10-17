@@ -1,0 +1,156 @@
+\documentclass[UTF8, a4paper, zihao=-4]{ctexart}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\small, breaklines=true, frame=single}
+
+\title{\textbf{文献综述智能体设计说明}\\{\large 大模型智能体长期记忆综述项目}}
+\author{成员 A\quad 成员 B\quad 成员 C}  % 待真人姓名替换
+\date{2026 年 10 月}
+
+\begin{document}
+\maketitle
+
+\section{设计目标与约束}
+
+本智能体的任务：围绕研究问题``大模型智能体如何从持续交互中保留有用经验，
+在信息变化时正确更新记忆，并在后续任务中可靠地使用这些记忆''，完成一篇
+不少于 30 篇真实文献的综述的全部可自动化环节——检索、去重、筛选、证据
+提取、陈述登记与草稿生成。
+
+核心约束（对应课程要求）：
+\begin{itemize}
+  \item \textbf{真实性优先}：任何引用、摘录、数值必须可回查到原文；
+        禁止编造。宁可输出``待核验''，不输出无依据结论。
+  \item \textbf{可恢复}：跨运行保留研究状态，中断后可继续且不重复写入。
+  \item \textbf{人工节点}：真人核验不可替代；智能体只准备核验材料，
+        不代签、不预填``已通过''。
+\end{itemize}
+
+\section{架构}
+
+\begin{lstlisting}
+研究目标 / 当前状态 / 人工反馈
+              |
+协调 Agent（coordinator.py）
+  观察状态(RQ 覆盖/证据缺口) -> 选择工具 -> 执行 -> 记录
+              |
+工具层（确定性为主，模型负责规划/提取/综合）
+  search: OpenAlex / arXiv / Crossref / Semantic Scholar
+  dedup:  DOI / arXiv ID / 题名-作者-年份 三重键归并 -> work_id
+  fetch:  PDF 下载(sha256 存档) + pdftotext 页级提取 + HTML 通道
+  evidence/claims/memory/review: JSONL 事件溯源读写
+  checks: 引用解析 / 证据支持 / 语料计数
+              |
+持久化（data/*.jsonl + runs/<id>/events.jsonl，全部追加式）
+              |
+带引用草稿 + 缺口清单 + 人工核验包
+\end{lstlisting}
+
+两层运行形态（决策记录 \texttt{docs/decisions.md} D-2）：
+\begin{itemize}
+  \item \textbf{协调器回合}（G2 演示）：模型在工具循环中自主决策——
+        观察缺口、选择检索词、读页、提交证据、诚实报告失败；
+  \item \textbf{批处理管线}（G3 规模化）：逐篇单次模型调用提取证据，
+        与协调器共用同一套摘录验证器与数据格式。
+\end{itemize}
+
+\section{记忆设计}
+
+四类记忆（\texttt{memory\_events.jsonl}，追加事件式）：
+任务记忆（范围/协议/待办）、证据记忆（定位/摘录/解释）、
+决策记忆（筛选理由/修改原因）、经验记忆（流程总结，默认未经事实核验）。
+
+两类状态分离记录：
+\begin{itemize}
+  \item \texttt{valid\_status}: active / superseded / disputed / rejected——
+        有效性；默认检索过滤非 active；
+  \item \texttt{trust\_status}: unverified / source\_checked / human\_verified——
+        核验层级；草稿与模型推测不得自动升级。
+\end{itemize}
+
+更新采用 \texttt{supersedes} 事件链：新条目取代旧条目但历史完整保留，
+可审计``旧错误经摘要后失去来源''的路径。冲突不按时间新旧自动覆盖：
+研究范围变更可更新任务规则；两篇论文结论不同则保留各自实验条件并标记差异。
+
+\section{反幻觉机制与实测}
+
+\subsection{机制}
+
+摘录提交时的\textbf{逐字签名验证}（代码强制，不依赖模型自觉）：
+\begin{enumerate}
+  \item 摘录与页面提取文本各生成``签名''——剔除空白与连字符（排版产物）
+        后的字符序列；
+  \item 摘录签名必须是页面签名的\textbf{连续子串}；
+  \item 通过后回存\textbf{原文真实片段}（保留原始连字符与换行），
+        保证 \texttt{evidence.excerpt} 与提取文本逐字一致；
+  \item 失败则拒绝并返回页面上最相似的原文片段（相似度提示），
+        供模型自纠错重试。
+\end{enumerate}
+
+改写、缩写、省略号压缩、凭记忆复述、表格单元格拼接均会被拒绝。
+
+\subsection{实测统计（真实运行日志汇总）}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}
+\toprule
+运行形态 & 摘录被拒 & 摘录接受 \\
+\midrule
+协调器回合（G2，12 次运行） & 258 & 38 \\
+批处理管线（G3） & \multicolumn{2}{c}{（G3 完成后填入）} \\
+\bottomrule
+\end{tabular}
+\caption{逐字验证拦截统计。协调器早期回合的高拒绝率来自验证规则
+迭代（连字符/双栏问题修复前）；被拒摘录从未进入证据库。}
+\end{table}
+
+协调器回合中两次典型的真实决策（\texttt{runs/} 日志可回查）：
+\begin{itemize}
+  \item \textbf{缺口驱动}：模型观察到 RQ1/RQ5 证据不足后，自主选择 7 个
+        补充检索词（如 ``long-term memory versus context window RAG
+        parametric knowledge boundary''），非脚本预设；
+  \item \textbf{诚实失败}：工具链缺少证据枚举能力时，模型拒绝编造
+        evidence\_id，明确报告``在禁止编造约束下无法合规完成''并提出
+        工具改进建议（后被采纳实现）。
+\end{itemize}
+
+\section{人工核验节点}
+
+\begin{itemize}
+  \item 核验包生成器（\texttt{review\_queue}）从真实数据产生三层待办：
+        文献身份/版本核验（每项候选引用文献）、边界判定复核（模型纳入/
+        排除决策）、claims 复核（direct/synthesis 全部）；
+  \item 核验结果由真人写入 \texttt{data/reviews.jsonl}，
+        智能体不预填``已通过''记录；
+  \item 优先级标注：更新与可靠性分支（综述重点）为 P0。
+\end{itemize}
+
+\section{评估设计}
+
+12 个冻结案例（\texttt{evaluation/cases.jsonl}）× 三条件
+（A 无记忆基线 / B 上下文注入 / C 结构化记忆）：
+跨会话恢复、失效记忆处理、不确定性保留、跨运行任务四类各 3 例。
+评分规则见 \texttt{evaluation/rubric.md}；结果与失败案例将如实报告。
+
+% G4 执行后填入：结果表 + 失败案例分析
+
+\section{局限}
+
+\begin{itemize}
+  \item 摘录验证保证``摘录逐字来自所指页面''，不保证``解释无过度引申''——
+        语义层核验仍需真人；
+  \item 页级定位基于 pdftotext raw 模式的页序，与印刷页码可能不一致
+        （预印本无印刷页码）；核验包中保留原文 PDF 供人工对页；
+  \item 批处理管线的分支标注与矩阵分类由模型判定，属待复核信息
+        （已列入核验队列）；
+  \item 评估为小样本演示性评估（12 案例 × 3 条件），不构成方法优劣的
+        统计证据。
+\end{itemize}
+
+\end{document}
