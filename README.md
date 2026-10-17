@@ -49,6 +49,128 @@ cd paper && tectonic main.tex               # 综述
 cd agent_report && tectonic main.tex        # 智能体说明
 ```
 
+## 从零重新生成一份综述（完整流程）
+
+> 端到端约 1.5–2 小时纯机器时间（含必要的人工策展决策点共约半天）。
+> 产出会与当前版本**不同**（检索结果随时间变化、模型输出有随机性），
+> 但流程约束不变：逐字验证、引用检查、身份核验照样执行。
+
+### 第 0 步：准备与备份（必须）
+
+```bash
+cd Acdamic-Writing-Class-Task
+uv sync
+
+# 凭证检查（无输出说明未配置，需要先 export 三变量，见 .env.example）
+env | grep -q ANTHROPIC_BASE_URL && echo OK || echo "缺凭证"
+
+# ⚠️ 数据文件是追加式的：重跑会追加新记录、与现有结果混淆。
+# 重生产前务必备份（保留当前干净状态可随时回退/对照）：
+cp -r data  data_backup_$(date +%m%d)
+cp -r paper paper_backup_$(date +%m%d)
+```
+
+网络依赖：OpenAlex/Crossref/arXiv 可达（无需 API key）；arXiv 有 ≥3s 节流属正常。
+
+### 第 1 步：检索与去重（~8 分钟）
+
+```bash
+uv run litreview run --stage discovery
+```
+
+11 组检索式（覆盖五个 RQ）× OpenAlex/Crossref + 6 篇种子论文核验 + 三重键
+去重。产出 `data/papers.jsonl`（候选库）与 `data/search_runs.jsonl`（每次
+检索的完整记录，含失败）。
+
+### 第 2 步：两轮筛选（~25 分钟）
+
+```bash
+uv run litreview run --stage screen --max 300   # 第一轮：题名+摘要初筛
+uv run litreview run --stage trace              # 引文前向追踪 + 经典补检
+uv run litreview run --stage screen             # 第二轮：筛新候选
+```
+
+初筛只决定"值得读全文"。模型判 uncertain 的条目需要人工裁决（约 15 项，
+每项 1–2 分钟）。
+
+### 第 3 步：核心池构建（人工策展环节，1–2 小时）
+
+这是**必须由人做**的决策（`src/litreview_agent/selection.py` 的
+SELECTION 清单）：从初筛通过的候选中选出约 40 篇核心阅读池，分七层
+（基础系统/组织检索/更新遗忘/评测/非恶意可靠性/安全投毒/综述边界），
+**每篇回答三问**：解决什么具体问题？在本文承担什么作用？相比已选论文
+提供什么不同？"标题相关/能下载/发表新"不构成入选理由。
+
+修改 SELECTION 后重建三件套（拟选表/覆盖矩阵/降级清单）：
+
+```bash
+uv run python -m litreview_agent.selection
+```
+
+### 第 4 步：核心池深读与证据提取（~25–30 分钟，本流程大头上）
+
+```bash
+uv run litreview run --stage evidence_batch
+```
+
+每篇：下载 PDF（sha256 存档 `sources/`）→ **身份核验**（首页必须匹配记录
+题名，防错配）→ pdftotext 提取 5 页（含方法/实验/消融）→ 模型提取 2–4 条
+证据 → **每条摘录逐字签名验证**（改写/省略/拼接被拒，实测拦截率约 25%）。
+断点续跑：再次执行同命令自动跳过已有证据的论文。
+
+### 第 5 步：阅读卡与矩阵（~5 分钟）
+
+```bash
+uv run python -m litreview_agent.reading_cards   # 或见下方调用方式
+uv run litreview run --stage matrix
+uv run litreview run --stage review_queue        # 生成人工核验包
+```
+
+每篇核心论文一张九要素阅读卡（问题/机制/更新/评测/发现/局限/关系/章节/
+定位），证据未覆盖的字段如实标注"待补读"，不编造。
+
+### 第 6 步：生成正文与编译（~15 分钟）
+
+```bash
+# 七节正文（素材=阅读卡+证据；生成后自动跑引用检查，无证据引用会被拦）
+uv run python -m litreview_agent.paper_writing
+
+# 后处理：RQ 定义强制替换为协议冻结版（模型会擅自改写）、标题层级修正
+uv run python scripts/postprocess_sections.py
+
+# 参考文献生成 + 编译
+uv run litreview bibgen
+cd paper && tectonic main.tex
+```
+
+编译后**必须做成品检查**（编译成功 ≠ 内容完整）：
+
+```bash
+pdfinfo main.pdf | grep Pages        # 页数
+pdftotext main.pdf - | grep "94"     # 抽查关键数字是否真的在 PDF 里
+```
+
+历史教训：模型会把 Markdown 残留（代码围栏/`**`/未转义 `%` 与 `$`）泄进
+LaTeX 导致内容静默丢失——这类问题只能靠成品抽查发现。
+
+### 第 7 步（可选）：评估与打包
+
+```bash
+uv run litreview evaluate            # 12 案例 × 3 条件（会产生模型调用费用）
+./scripts/package_submission.sh      # 构建提交包（submission/）
+```
+
+### 耗时与产物汇总
+
+| 场景 | 耗时 | 说明 |
+|---|---|---|
+| 完整重生产（纯机器） | 1.5–2 小时 | 第 1–2、4–6 步 |
+| 含人工策展决策点 | 约半天 | 第 3 步选池 + uncertain 裁决 |
+| 离线复现验证（零模型调用） | 5 分钟 | `uv run pytest && uv run litreview check --scope corpus && cd paper && tectonic main.tex` |
+
+每一步的中间产物都在 `data/`（JSONL 追加式）与 `runs/`（运行日志）中，
+重生产过程中可随时中断检查；全流程的决策依据见 `docs/decisions.md`。
+
 ## 数据与可追溯性
 
 | 文件 | 内容 |

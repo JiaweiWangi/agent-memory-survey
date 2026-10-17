@@ -122,3 +122,14 @@ def render_cards_markdown(cards_path: Path, out_md: Path) -> int:
             lines.append("")
     out_md.write_text("\n".join(lines), encoding="utf-8")
     return len(cards)
+
+
+if __name__ == "__main__":
+    from pathlib import Path as _P
+    from .model_backends import AnthropicBackend as _B
+    data = _P("data")
+    stats = generate_reading_cards(data, _B(), data / "derived" / "reading_cards.jsonl")
+    print(stats)
+    n = render_cards_markdown(data / "derived" / "reading_cards.jsonl",
+                              data / "derived" / "reading_cards.md")
+    print(f"Markdown 渲染 {n} 张 → data/derived/reading_cards.md")
