@@ -7,6 +7,24 @@
 - 执行规范：`EXECUTION_PLAN.md`；研究协议：`docs/protocol.md`（冻结）
 - 交接指令：`AGENT_HANDOFF.md`；决策记录：`docs/decisions.md`
 
+## 当前核心产出（2026-10-18）
+
+建议先阅读综述与智能体说明，再查看课程汇报；研究数据与评估材料用于回查依据。
+
+| 产出 | 文件入口 | 内容与当前状态 |
+|---|---|---|
+| 文献综述 | [综述 PDF](paper/main.pdf) · [LaTeX 源文件](paper/main.tex) | 覆盖问题背景、研究脉络、组织与更新机制、可靠性评测和主要挑战；核心阅读池 40 篇，正文实际引用 39 项独立研究。 |
+| 智能体设计与实现 | [设计说明 PDF](agent_report/main.pdf) · [LaTeX 源文件](agent_report/main.tex) · [源码](src/litreview_agent/) | 单一协调器、工具与批处理管线；包含持久记忆、证据溯源、摘录检查、人工核验节点及真实运行案例。 |
+| 最新课程汇报 | [可编辑 PPTX](slides/output/long_term_memory_course_astra.pptx) | Astra 重新设计并复核；9 页主讲、3 页隐藏备份，按智能体 4 分钟、综述 4 分钟安排。真人计时排练待完成。 |
+| 汇报讲稿与预览 | [逐页讲稿、时间安排和来源](slides/output/astra_course_design.md) · [页面总览](slides/output/preview_astra.png) | 以课程作业情境引入长期记忆，展示智能体的真实决策，再围绕组织、更新和评测讲述研究进展。 |
+| 文献与证据材料 | [核心选文表](data/derived/core_selection.md) · [阅读卡](data/derived/reading_cards.md) · [研究矩阵](data/derived/research_matrix.md) · [关键论断映射](data/derived/claims_map.md) | 回查入选理由、研究分类，以及重要论断对应的文献、原文定位和适用条件；底层证据见 [evidence.jsonl](data/evidence.jsonl)。 |
+| 智能体评估 | [评估报告](evaluation/report.md) · [评分规则](evaluation/rubric.md) · [运行结果](evaluation/results.jsonl) | 12 个案例、3 种条件；当前采用成功／失败／待核验三态判分，小样本结果不构成方法优劣的统计证据。 |
+| 核验与交付状态 | [人工核验队列](docs/human_review_queue.md) · [验收记录](docs/final_acceptance.md) · [成员贡献记录](docs/contribution_log.md) | 人工核验、成员署名与贡献填写、真人计时排练仍待完成；整体保持“待人工核验草稿”状态。 |
+
+当前课堂汇报以以上 PPTX 和配套讲稿为准。[Beamer PDF](slides/main.pdf)、
+[Beamer 源文件](slides/main.tex) 与 [原讲稿](slides/speaker_notes.md) 为早期版本，
+尚未同步新版课堂叙事。
+
 ## 环境
 
 - Python：uv 管理（`uv sync` 按 `uv.lock` 恢复，Python 3.12）
@@ -193,7 +211,7 @@ PDF 的指定页。
 ```
 paper/          综述 LaTeX 工程
 agent_report/   智能体设计说明（LaTeX）
-slides/         汇报材料（G6）
+slides/         汇报材料；output/ 为当前课程 PPT、讲稿与预览
 src/litreview_agent/  智能体源码
 data/           研究数据（JSONL，入库）
 sources/        论文 PDF 存档（不入库，本地保留）
@@ -208,4 +226,6 @@ docs/           协议、环境、可行性、决策、核验队列
   `PROGRESS.md` §4）；
 - 摘录验证保证逐字性，不保证解释无过度引申——语义核验需真人；
 - 评估为小样本演示性评估，不构成方法优劣的统计证据；最终结果与判分方法见
-  `evaluation/report.md`（v5：B 上下文注入 12/12 最好，C 结构化记忆 9/12）。
+  [评估报告](evaluation/report.md)（v6，成功／失败／待核验：A 无记忆 2/10/0、
+  B 上下文注入 11/0/1、C 结构化记忆 9/3/0）。语义判分仍待人工复核，
+  待核验不计入成功；当前结果未显示结构化记忆优于直接上下文注入。
