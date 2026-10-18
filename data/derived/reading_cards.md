@@ -350,17 +350,17 @@
 - **原文定位**：pdf:p1 Abstract; pdf:p2 §1 paragraphs 3-4
 
 ### W0434 MemBuilder: Reinforcing LLMs for Long-Term Memory Construction via Att（2026，arXiv (Cornell University)）
-*角色：记忆构建评测 | 证据 2 条*
+*角色：记忆构建方法 | 证据 4 条*
 
 - **研究问题**：作者称：针对提示型记忆框架的三大局限与训练型方法的两个技术瓶颈，研究如何通过属性化稠密奖励强化LLM的长期记忆构建。
-- **记忆机制**：（证据未覆盖，待补读）
+- **记忆机制**：训练型长期记忆构建方法，通过SFT与RL训练Qwen3-4B执行多类型记忆操作；Table 1比较不同构建模型与训练阶段（ev-w0434-construction-20261018）。
 - **更新方式**：（证据未覆盖，待补读）
-- **评测设置**：（证据未覆盖，待补读）
-- **主要发现**：（证据未覆盖，待补读）
-- **条件与局限**：本卡综合：提示型方法适用于Mem0、MIRIX、MemGPT等框架，但缺乏下游反馈且依赖强模型；训练型方法（Memory-R1、Mem-α）存在轨迹级稀疏奖励瓶颈（依据pdf:p1、pdf:p2引言）。
+- **评测设置**：作者使用Qwen3-4B-Instruct-2507为基础模型、GPT-4.1为评测judge、text-embedding-3-small检索，并默认固定Claude 4.5 Sonnet回答以隔离记忆构建质量。 §4.1使用已有LongMemEval、LoCoMo、PerLTQA；仅在LongMemEval子集训练，后两者为OOD测试。
+- **主要发现**：作者在三种已有基准上比较检索型、提示型和训练型记忆构建方法，固定Claude 4.5 Sonnet回答以考察构建质量；MemBuilder是训练型记忆构建方法，不是独立benchmark。
+- **条件与局限**：固定回答器有助于控制比较条件，但下游问答仍受检索与judge影响；不能把MemBuilder当成新benchmark。 Memory-R1的原论文结果使用不同answer model，表格脚注明示；不能视为全部方法严格同配置，也不将下游QA等同于独立记忆状态正确性。
 - **与其他方法关系**：作者称：与提示型记忆框架（Mem0、MIRIX、MemGPT）相比，训练型方法Memory-R1和Mem-α尝试弥补学习差距，但受限于稀疏轨迹奖励（依据pdf:p1、pdf:p2引言）。
-- **拟用章节**：记忆构建评测
-- **原文定位**：pdf:p1 §Introduction; pdf:p2 §Introduction
+- **拟用章节**：记忆构建方法与评测：在固定回答器下通过下游问答考察构建质量。
+- **原文定位**：pdf:p1 §Introduction; pdf:p2 §Introduction; pdf:p6 §4.1 Experimental Setup; pdf:p7 §4.3 Main Results / Table 1
 
 ### W0691 MemBench: Towards More Comprehensive Evaluation on the Memory of LLM-b（2025，arXiv）
 *角色：综合记忆评测 | 证据 2 条*
@@ -458,17 +458,17 @@
 ## L6-安全投毒（3 篇）
 
 ### W0076 Memory Poisoning Attack and Defense on Memory Based LLM-Agents（2026，arXiv (Cornell University)）
-*角色：攻防综合 | 证据 2 条*
+*角色：攻防综合 | 证据 4 条*
 
 - **研究问题**：如何防御基于记忆的 LLM-Agent 遭受记忆毒化攻击？（RQ3 关注记忆更新处理，RQ4 关注写入控制）
 - **记忆机制**：系统存储长期记忆条目，在检索时使用信任感知过滤与排序（含时间衰减），写入（append）需通过复合信任分数门控。
 - **更新方式**：作者称检索时对记忆条目施加时间衰减，使陈旧条目信任度下降，以处理过时或不可靠记忆（pdf:p9）。
-- **评测设置**：防御系统为 guard agent + memory sanitization（GPT-4o-mini-class 与 Gemini-2.0-Flash）；攻击套件基于 eICU 与 MIMIC 临床 prompt 集（pdf:p8, p9）。
-- **主要发现**：（证据未覆盖，待补读）
-- **条件与局限**：证据仅覆盖防御机制描述，未提供定量结果；适用模型包括 GPT-4o-mini-class 与 Gemini-2.0-Flash，应用场景为临床 prompt 集（eICU 与 MIMIC）。
+- **评测设置**：MIMIC-III dataset split；101条poison queries；few-shot memory size=4；各运行主agent与guard使用同一模型。结果分别限定GPT-4o-mini与Gemini-2.0-Flash；计数单位为候选/接受记忆条目，不是独立攻击成功率。
+- **主要发现**：作者报告GPT-4o-mini运行中23条候选记忆全部拒绝，接受0条；这是极保守写入行为，不是兼顾正常记忆效用的证明。 作者报告82条接受条目中54条为恶意，28条为良性，全部接受条目信任分数1.0；阈值0.5的检索过滤模拟没有滤掉任何接受条目。54/82不是攻击成功率，不推算ASR。
+- **条件与局限**：guard与memory sanitization分层；0泄漏仅限该配置与本次运行。全部拒绝使长期记忆为空，不能泛化为正常效用无损或所有攻击均由sanitization阻挡。 接受条目构成与attack-query成功率口径不同；检索过滤为模拟，不能推广到所有阈值或系统。高信任未保证内容安全。
 - **与其他方法关系**：本卡综合：防御包括 memory sanitization（检索时过滤）与 Input Output Moderation（写入门控），二者均以信任分数为核心，未与其他外部方法直接对比。
 - **拟用章节**：适用于安全投毒防御章节的攻防综合部分，具体可放入“防御机制”小节（写入控制与检索过滤）以及“适用条件与局限”小节。
-- **原文定位**：pdf:p9 6.2 Memory Sanitization; pdf:p8 6.1.1
+- **原文定位**：pdf:p9 6.2 Memory Sanitization; pdf:p8 6.1.1; pdf:p10 §8.1 Experiment 1: GPT-4o-mini; pdf:p12 §8.2 Experiment 2: Gemini-2.0-Flash
 
 ### W0319 MemPoison: Bypassing Selective Memory Mechanisms to Plant Backdoors in（2026，arXiv (Cornell University)）
 *角色：选择性绕过后门 | 证据 3 条*
@@ -490,8 +490,8 @@
 - **记忆机制**：（证据未覆盖，待补读）
 - **更新方式**：（证据未覆盖，待补读）
 - **评测设置**：任务为良性 LoCoMo 对话流量；与未防御基线使用同一内存后端、检索配置和冻结判断器；五次对话、每组三次重复；对照包括读取端防御（reranker）。
-- **主要发现**：作者称读取端防御（reranker）使核心准确率下降 4.4 点（95% CI [-9.0,0.05]，bootstrap；McNemar p=0.064）；在无攻击对话中 33.6% 的合法记忆被误隔离，单个对话最多 106 次误隔离，令牌开销为 2.7%（[pdf:p1 Abstract]）。
-- **条件与局限**：结论限于完全良性 LoCoMo 对话流量；与未防御基线同一内存后端、检索配置和冻结判断器；五次对话、每组三次重复；准确率变化处于分辨率边缘，机制性代价更显著（[pdf:p1 Abstract]）。现有评估体系仅测攻击成功率或无防御性能，缺乏良性成本测量（[pdf:p2 §2.3]）。
+- **主要发现**：作者称读取端防御（reranker）使核心准确率下降 4.4 点（95% CI [-9.0,-0.05]，bootstrap；McNemar p=0.064）；在无攻击对话中 33.6% 的合法记忆被误隔离，单个对话最多 106 次误隔离，令牌开销为 2.7%（[pdf:p1 Abstract]）。 bootstrap区间狭窄排除零；McNemar p=0.064未达常用0.05阈值，两者不能混为同一检验结论。
+- **条件与局限**：仅限完全良性流量；bootstrap区间狭窄排除零，但McNemar p=0.064未达常用0.05阈值，作者称位于分辨率边缘；不能写成区间包含零或据此证明攻击防御效果。
 - **与其他方法关系**：本卡综合：本文对比了攻击防御文献（仅报告攻击成功率下降）与系统文献（仅测无防御内存架构性能），指出二者未相交（[pdf:p2 §2.3]）。与其他方法的具体对比关系证据未覆盖，待补读。
 - **拟用章节**：拟用于正文章节：防御成本评估部分（层 L6-安全投毒），用于说明读取端防御在良性用例中的准确率、误隔离与令牌开销代价，并支撑评测缺口论述。
 - **原文定位**：pdf:p1 Abstract; pdf:p2 §2.3 The Attack-Success-Rate Gap
