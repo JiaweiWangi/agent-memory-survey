@@ -7,7 +7,7 @@
 - 执行规范：`EXECUTION_PLAN.md`；研究协议：`docs/protocol.md`（冻结）
 - 交接指令：`AGENT_HANDOFF.md`；决策记录：`docs/decisions.md`
 
-## 当前核心产出（2026-10-18）
+## 当前核心产出（2026-10-20）
 
 建议先阅读综述与智能体说明，再查看课程汇报；研究数据与评估材料用于回查依据。
 
@@ -15,8 +15,8 @@
 |---|---|---|
 | 文献综述 | [综述 PDF](paper/main.pdf) · [LaTeX 源文件](paper/main.tex) | 覆盖问题背景、研究脉络、组织与更新机制、可靠性评测和主要挑战；核心阅读池 40 篇，正文实际引用 39 项独立研究。 |
 | 智能体设计与实现 | [设计说明 PDF](agent_report/main.pdf) · [LaTeX 源文件](agent_report/main.tex) · [源码](src/litreview_agent/) | 单一协调器、工具与批处理管线；包含持久记忆、证据溯源、摘录检查、人工核验节点及真实运行案例。 |
-| 最新课程汇报 | [可编辑 PPTX](slides/output/long_term_memory_course_astra_v2.pptx) | v2 补充程序检查步骤；沿用 Astra 复核的结构，9 页主讲、3 页隐藏备份，按智能体 4 分钟、综述 4 分钟安排。真人计时排练待完成。 |
-| 汇报讲稿与预览 | [逐页讲稿、时间安排和来源](slides/output/astra_course_design_v2.md) · [页面总览](slides/output/preview_astra_v2.png) | 以课程作业情境引入长期记忆，展示智能体的真实决策，再围绕组织、更新和评测讲述研究进展。 |
+| 最新课程汇报 | [可编辑 PPTX](slides/output/long_term_memory_course_astra_v4.pptx) | v4 展开智能体的决策闭环与真实补检案例，保留封面、过渡页、程序检查说明和措辞评审修改；11 页主讲、3 页隐藏备份，按智能体 4 分钟、综述 4 分钟安排。真人计时排练待完成。 |
+| 汇报讲稿与预览 | [逐页讲稿、时间安排和来源](slides/output/astra_course_design_v4.md) · [页面总览](slides/output/preview_astra_v4.png) | 以课程作业情境引入长期记忆，说明协调器如何依据状态选择工具、根据反馈继续行动，再围绕组织、更新和评测讲述研究进展。 |
 | 文献与证据材料 | [核心选文表](data/derived/core_selection.md) · [阅读卡](data/derived/reading_cards.md) · [研究矩阵](data/derived/research_matrix.md) · [关键论断映射](data/derived/claims_map.md) | 回查入选理由、研究分类，以及重要论断对应的文献、原文定位和适用条件；底层证据见 [evidence.jsonl](data/evidence.jsonl)。 |
 | 智能体评估 | [评估报告](evaluation/report.md) · [评分规则](evaluation/rubric.md) · [运行结果](evaluation/results.jsonl) | 12 个案例、3 种条件；当前采用成功／失败／待核验三态判分，小样本结果不构成方法优劣的统计证据。 |
 | 核验与交付状态 | [人工核验队列](docs/human_review_queue.md) · [验收记录](docs/final_acceptance.md) · [成员贡献记录](docs/contribution_log.md) | 人工核验、成员署名与贡献填写、真人计时排练仍待完成；整体保持“待人工核验草稿”状态。 |
